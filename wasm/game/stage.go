@@ -13,6 +13,9 @@ func stage1(obj *gameObject, engine Engine) {
 			newEnemy := newObject(objTypeEnemy, float64(16+24*x), 0)
 			newEnemy.moveFunc = moveStopAim
 			newEnemy.vy = 3
+			newEnemy.deadFunc = deadExplode
+			newEnemy.score = 100
+			newEnemy.size = 8
 			engine.AddEnemy(newEnemy)
 		}
 		return
@@ -28,6 +31,9 @@ func stage1(obj *gameObject, engine Engine) {
 			newEnemy := newObject(objTypeEnemy, float64(304-24*x), 0)
 			newEnemy.moveFunc = moveStopAim
 			newEnemy.vy = 3
+			newEnemy.deadFunc = deadExplode
+			newEnemy.score = 100
+			newEnemy.size = 8
 			engine.AddEnemy(newEnemy)
 		}
 		return
@@ -43,11 +49,17 @@ func stage1(obj *gameObject, engine Engine) {
 			newEnemy := newObject(objTypeEnemy, float64(304-24*x), 0)
 			newEnemy.moveFunc = moveStopAim
 			newEnemy.vy = 3
+			newEnemy.deadFunc = deadExplode
+			newEnemy.score = 100
+			newEnemy.size = 8
 			engine.AddEnemy(newEnemy)
 
 			newEnemy = newObject(objTypeEnemy, float64(16+24*x), 0)
 			newEnemy.moveFunc = moveStopAim
 			newEnemy.vy = 3
+			newEnemy.deadFunc = deadExplode
+			newEnemy.score = 100
+			newEnemy.size = 8
 			engine.AddEnemy(newEnemy)
 		}
 		return

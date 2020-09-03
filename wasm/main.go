@@ -60,6 +60,9 @@ func initListeners(document js.Value, engine game.Engine) {
 		if keyName == "ArrowRight" {
 			key |= 8
 		}
+		if keyName == " " {
+			key |= 16
+		}
 		return nil
 	})
 
@@ -77,6 +80,9 @@ func initListeners(document js.Value, engine game.Engine) {
 		}
 		if keyName == "ArrowRight" {
 			key &= ^8
+		}
+		if keyName == " " {
+			key &= ^16
 		}
 		return nil
 	})
