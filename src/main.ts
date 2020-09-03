@@ -47,7 +47,11 @@ if (!WebAssembly.instantiateStreaming) {
 
     setImage("player", playerImg);
 
-    start();
+    const button = document.querySelector("#start") as HTMLButtonElement;
+    button.addEventListener("click", () => {
+      button.hidden = true;
+      start();
+    });
   } catch (err) {
     console.error(err);
   }
