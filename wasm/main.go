@@ -11,6 +11,13 @@ var (
 	key         int16
 	ctx         js.Value
 	playerImage js.Value
+
+	touchStartX int
+	touchStartY int
+	touchEndX   int
+	touchEndY   int
+	touchDown   bool
+	touchMoved  bool
 )
 
 func main() {
@@ -20,7 +27,7 @@ func main() {
 
 	engine := game.New()
 
-	initListeners(document, engine)
+	initListeners(document, canvas, engine)
 
 	startFunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		start(engine, ctx)
@@ -34,7 +41,7 @@ func main() {
 	<-done
 }
 
-func initListeners(document js.Value, engine game.Engine) {
+func initListeners(document js.Value, canvas js.Value, engine game.Engine) {
 	setImage := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		key := args[0].JSValue().String()
 		value := args[1].JSValue()
@@ -87,14 +94,84 @@ func initListeners(document js.Value, engine game.Engine) {
 		return nil
 	})
 
+	touchStartEvent := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		event := args[0]
+		event.Call("preventDefault")
+		touches := event.Get("changedTouches")
+		size := touches.Get("length").Int()
+
+		if size == 0 {
+			return nil
+		}
+		touch := touches.Index(0)
+		touchStartX = touch.Get("pageX").Int()
+		touchStartY = touch.Get("pageY").Int()
+		touchEndX = touchStartX
+		touchEndY = touchStartY
+		touchMoved = false
+		touchDown = true
+
+		return nil
+	})
+
+	touchMoveEvent := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		event := args[0]
+		event.Call("preventDefault")
+		touches := event.Get("changedTouches")
+		size := touches.Get("length").Int()
+
+		if size == 0 {
+			return nil
+		}
+		touch := touches.Index(0)
+		touchEndX = touch.Get("pageX").Int()
+		touchEndY = touch.Get("pageY").Int()
+		touchMoved = true
+
+		return nil
+	})
+
+	touchUpEvent := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		event := args[0]
+		event.Call("preventDefault")
+		touches := event.Get("changedTouches")
+		size := touches.Get("length").Int()
+
+		if size == 0 {
+			return nil
+		}
+		_ = touches
+		touchMoved = false
+		touchDown = false
+
+		return nil
+	})
+
 	document.Call("addEventListener", "keydown", keyDownEvent)
 	document.Call("addEventListener", "keyup", keyUpEvent)
+	canvas.Call("addEventListener", "touchstart", touchStartEvent, false)
+	canvas.Call("addEventListener", "touchmove", touchMoveEvent, false)
+	canvas.Call("addEventListener", "touchend", touchUpEvent, false)
 }
 
 func start(engine game.Engine, ctx js.Value) {
 	var renderFrame js.Func
 	renderFrame = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		engine.DoFrame(key, ctx)
+		touchDX := 0
+		touchDY := 0
+		if touchMoved {
+			touchDX = touchEndX - touchStartX
+			touchDY = touchEndY - touchStartY
+			touchStartX = touchEndX
+			touchStartY = touchEndY
+			touchMoved = false
+		}
+		key2 := key
+		if touchDown {
+			// shot
+			key2 |= 16
+		}
+		engine.DoFrame(key2, touchDX, touchDY, ctx)
 
 		js.Global().Call("requestAnimationFrame", renderFrame)
 		return nil

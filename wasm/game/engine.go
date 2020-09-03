@@ -16,7 +16,7 @@ type Engine interface {
 	AddScore(value int)
 	Miss() bool
 	ToGameOver()
-	DoFrame(key int16, ctx js.Value)
+	DoFrame(key int16, touchDX, touchDY int, ctx js.Value)
 }
 
 const (
@@ -94,15 +94,15 @@ func (e *engine) ToGameOver() {
 	e.gameState = gameStateGameOver
 }
 
-func (e *engine) DoFrame(key int16, ctx js.Value) {
+func (e *engine) DoFrame(key int16, touchDX, touchDY int, ctx js.Value) {
 	if e.gameState == gameStateMain {
-		e.DoMainFrame(key, ctx)
+		e.DoMainFrame(key, touchDX, touchDY, ctx)
 		return
 	}
 }
 
-func (e *engine) DoMainFrame(key int16, ctx js.Value) {
-	movePlayer(e.player, key, e)
+func (e *engine) DoMainFrame(key int16, touchDX, touchDY int, ctx js.Value) {
+	movePlayer(e.player, key, touchDX, touchDY, e)
 	moveEnemy(e.enemies, e)
 	moveEnemy(e.hiddenEnemies, e)
 	moveEnemy(e.playerShots, e)
@@ -124,7 +124,7 @@ func (e *engine) DoMainFrame(key int16, ctx js.Value) {
 	e.playerShots = pack(e.playerShots)
 }
 
-func movePlayer(player *gameObject, key int16, engine Engine) {
+func movePlayer(player *gameObject, key int16, touchDX, touchDY int, engine Engine) {
 	if !player.alive {
 		player.frame--
 		if player.frame == 0 {
@@ -145,24 +145,28 @@ func movePlayer(player *gameObject, key int16, engine Engine) {
 		player.frame--
 	}
 	if key&1 != 0 {
-		if player.y > 0 {
-			player.y -= 4
-		}
+		player.y -= 4
 	}
 	if key&2 != 0 {
-		if player.y < 480 {
-			player.y += 4
-		}
+		player.y += 4
 	}
 	if key&4 != 0 {
-		if player.x > 0 {
-			player.x -= 4
-		}
+		player.x -= 4
 	}
 	if key&8 != 0 {
-		if player.x < 320 {
-			player.x += 4
-		}
+		player.x += 4
+	}
+	player.x += float64(touchDX)
+	player.y += float64(touchDY)
+	if player.x < 0 {
+		player.x = 0
+	} else if player.x > 320 {
+		player.x = 320
+	}
+	if player.y < 0 {
+		player.y = 0
+	} else if player.y > 480 {
+		player.y = 480
 	}
 
 	if player.shotFrame > 0 {
