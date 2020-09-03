@@ -61,7 +61,7 @@ func (e *engine) Player() *gameObject {
 
 func (e *engine) Miss() bool {
 	e.life--
-	return e.life > 0
+	return e.life >= 0
 }
 
 func (e *engine) ToGameOver() {
@@ -85,6 +85,7 @@ func (e *engine) DoMainFrame(key int16, ctx js.Value) {
 	ctx.Call("clearRect", 0, 0, 320, 480)
 	drawEnemy(ctx, e.images, e.enemies)
 	drawPlayer(ctx, e.images, e.player)
+	drawScore(ctx, e.images, e.life)
 
 	e.enemies = pack(e.enemies)
 	e.hiddenEnemies = pack(e.hiddenEnemies)
@@ -162,6 +163,12 @@ func drawPlayer(ctx js.Value, images map[string]js.Value, player *gameObject) {
 		}
 		ctx.Call("drawImage", images["player"], player.x-12, player.y-12)
 		return
+	}
+}
+
+func drawScore(ctx js.Value, images map[string]js.Value, life int) {
+	for x := 0; x < life; x++ {
+		ctx.Call("drawImage", images["heart"], 0, 0, 36, 36, x*18, 18, 18, 18)
 	}
 }
 

@@ -31,6 +31,7 @@ if (!WebAssembly.instantiateStreaming) {
 // boot
 (async () => {
   const playerImg = await loadImage("./player.png");
+  const heartImg = await loadImage("./heart.png");
 
   const go = new Go();
   let mod: any;
@@ -46,6 +47,7 @@ if (!WebAssembly.instantiateStreaming) {
     go.run(inst);
 
     setImage("player", playerImg);
+    setImage("heart", heartImg);
 
     const button = document.querySelector("#start") as HTMLButtonElement;
     button.addEventListener("click", () => {
