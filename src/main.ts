@@ -5,7 +5,12 @@ declare class Go {
   run(inst: any): Promise<any>;
 }
 
-declare function setImage(key: string, img: HTMLImageElement): void;
+declare function setImage(
+  key: string,
+  img: HTMLImageElement,
+  width: number,
+  height: number
+): void;
 declare function start(): void;
 
 const loadImage = (src: string) =>
@@ -30,8 +35,11 @@ if (!WebAssembly.instantiateStreaming) {
 
 // boot
 (async () => {
-  const playerImg = await loadImage("./player.png");
-  const heartImg = await loadImage("./heart.png");
+  const [playerImg, heartImg, numberImg] = await Promise.all([
+    loadImage("./player.png"),
+    loadImage("./heart.png"),
+    loadImage("./number.png"),
+  ]);
 
   const go = new Go();
   let mod: any;
@@ -46,8 +54,9 @@ if (!WebAssembly.instantiateStreaming) {
     inst = result.instance;
     go.run(inst);
 
-    setImage("player", playerImg);
-    setImage("heart", heartImg);
+    setImage("player", playerImg, 24, 24);
+    setImage("heart", heartImg, 18, 18);
+    setImage("number", numberImg, 18, 18);
 
     const button = document.querySelector("#start") as HTMLButtonElement;
     button.addEventListener("click", () => {

@@ -45,8 +45,10 @@ func initListeners(document js.Value, canvas js.Value, engine game.Engine) {
 	setImage := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		key := args[0].JSValue().String()
 		value := args[1].JSValue()
+		width := args[2].JSValue().Float()
+		height := args[3].JSValue().Float()
 
-		engine.AddImage(key, value)
+		engine.AddImage(key, value, width, height)
 
 		return nil
 	})

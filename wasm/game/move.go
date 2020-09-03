@@ -10,6 +10,13 @@ func moveLine(obj *gameObject, engine Engine) {
 	}
 }
 
+func moveFrameUp(obj *gameObject, engine Engine) {
+	obj.frame++
+	if obj.frame > 30 {
+		obj.alive = false
+	}
+}
+
 func moveStopAim(obj *gameObject, engine Engine) {
 	obj.frame++
 	if obj.frame < 60 {

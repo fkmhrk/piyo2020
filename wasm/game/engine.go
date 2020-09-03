@@ -6,9 +6,10 @@ import (
 
 // Engine is an engine
 type Engine interface {
-	AddImage(key string, image js.Value)
+	AddImage(key string, image js.Value, width, height float64)
 	AddPlayerShot(shot *gameObject)
 	AddEnemy(enemy *gameObject)
+	AddEnemyShot(shot *gameObject)
 	AddEffect(effect *gameObject)
 	Player() *gameObject
 
@@ -26,10 +27,11 @@ const (
 type gameState int
 
 type engine struct {
-	images        map[string]js.Value
+	images        map[string]*jsImage
 	player        *gameObject
 	playerShots   []*gameObject
 	enemies       []*gameObject
+	enemyShots    []*gameObject
 	hiddenEnemies []*gameObject
 	effects       []*gameObject
 	stage         *gameObject
@@ -49,9 +51,10 @@ func New() Engine {
 	stg := newObject(objTypeStage, 0, 0)
 	stg.moveFunc = stage1
 	return &engine{
-		images:        make(map[string]js.Value),
+		images:        make(map[string]*jsImage),
 		player:        player,
 		enemies:       make([]*gameObject, 0, 100),
+		enemyShots:    make([]*gameObject, 0, 100),
 		hiddenEnemies: make([]*gameObject, 0, 100),
 		effects:       make([]*gameObject, 0, 100),
 		stage:         stg,
@@ -62,8 +65,14 @@ func New() Engine {
 	}
 }
 
-func (e *engine) AddImage(key string, image js.Value) {
-	e.images[key] = image
+func (e *engine) AddImage(key string, image js.Value, width, height float64) {
+	e.images[key] = &jsImage{
+		value:   image,
+		width:   width,
+		height:  height,
+		width2:  width * 2,
+		height2: height * 2,
+	}
 }
 
 func (e *engine) AddPlayerShot(shot *gameObject) {
@@ -72,6 +81,10 @@ func (e *engine) AddPlayerShot(shot *gameObject) {
 
 func (e *engine) AddEnemy(enemy *gameObject) {
 	e.enemies = append(e.enemies, enemy)
+}
+
+func (e *engine) AddEnemyShot(shot *gameObject) {
+	e.enemyShots = append(e.enemyShots, shot)
 }
 
 func (e *engine) AddEffect(effect *gameObject) {
@@ -106,21 +119,24 @@ func (e *engine) DoMainFrame(key int16, touchDX, touchDY int, ctx js.Value) {
 	movePlayer(e.player, key, touchDX, touchDY, e)
 	moveEnemy(e.enemies, e)
 	moveEnemy(e.hiddenEnemies, e)
+	moveEnemy(e.enemyShots, e)
 	moveEnemy(e.playerShots, e)
 	moveEnemy(e.effects, e)
-	hitCheck(e.player, e.playerShots, e.enemies, e)
+	hitCheck(e.player, e.playerShots, e.enemies, e.enemyShots, e)
 	checkPlayerIsDead(e.player, e)
 	e.stage.moveFunc(e.stage, e)
 	e.displayScore = calcDisplayScore(e.score, e.displayScore)
 
 	ctx.Call("clearRect", 0, 0, 320, 480)
 	drawObjects(ctx, e.images, e.enemies)
+	drawObjects(ctx, e.images, e.enemyShots)
 	drawObjects(ctx, e.images, e.effects)
 	drawObjects(ctx, e.images, e.playerShots)
 	e.player.drawFunc(ctx, e.player, e.images)
 	drawScore(ctx, e.images, e.displayScore, e.life)
 
 	e.enemies = pack(e.enemies)
+	e.enemyShots = pack(e.enemyShots)
 	e.hiddenEnemies = pack(e.hiddenEnemies)
 	e.effects = pack(e.effects)
 	e.playerShots = pack(e.playerShots)
@@ -177,11 +193,21 @@ func moveEnemy(enemies []*gameObject, engine Engine) {
 		if e.moveFunc != nil {
 			e.moveFunc(e, engine)
 		}
+		if e.shotFunc != nil {
+			e.shotFunc(e, engine)
+		}
 	}
 }
 
-func hitCheck(player *gameObject, playerShots []*gameObject, enemies []*gameObject, engine Engine) {
+func hitCheck(
+	player *gameObject,
+	playerShots []*gameObject,
+	enemies []*gameObject,
+	enemyShots []*gameObject,
+	engine Engine,
+) {
 	hitCheckPlayerToEnemies(player, enemies, engine)
+	hitCheckPlayerToEnemies(player, enemyShots, engine)
 	hitCheckShotsToTargets(playerShots, enemies, engine)
 }
 
@@ -259,16 +285,27 @@ func calcDisplayScore(score, displayScore int) int {
 	return displayScore
 }
 
-func drawObjects(ctx js.Value, images map[string]js.Value, objs []*gameObject) {
+func drawObjects(ctx js.Value, images map[string]*jsImage, objs []*gameObject) {
 	for _, o := range objs {
 		o.drawFunc(ctx, o, images)
 	}
 }
 
-func drawScore(ctx js.Value, images map[string]js.Value, score int, life int) {
-	ctx.Call("fillText", score, 0, 18)
+func drawScore(ctx js.Value, images map[string]*jsImage, score int, life int) {
+	x := 18 * 8
+	numImage := images["number"]
+	for {
+		digit := score % 10
+		ctx.Call("drawImage", numImage.value, digit*36, 0, 36, 36, x, 0, 18, 18)
+		x -= 18
+		score /= 10
+		if x < 0 || score <= 0 {
+			break
+		}
+	}
+	image := images["heart"]
 	for x := 0; x < life; x++ {
-		ctx.Call("drawImage", images["heart"], 0, 0, 36, 36, x*18, 18, 18, 18)
+		ctx.Call("drawImage", image.value, 0, 0, 36, 36, x*18, 18, 18, 18)
 	}
 }
 

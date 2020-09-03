@@ -21,12 +21,13 @@ type gameObject struct {
 	size      float64
 	alive     bool
 	frame     int
-	shotFrame int
 	score     int
 	moveFunc  moveFunc
 	deadFunc  deadFunc
 	drawFunc  drawFunc
 	imageName string
+	shotFunc  shotFunc
+	shotFrame int
 }
 
 func newObject(objType int, x, y float64) *gameObject {
