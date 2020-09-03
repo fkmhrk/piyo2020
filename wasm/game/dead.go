@@ -11,6 +11,7 @@ func deadExplode(engine Engine, obj *gameObject) {
 		e1.moveFunc = moveLine
 		e1.vx = math.Cos(rad) * 4
 		e1.vy = math.Sin(rad) * 4
+		e1.drawFunc = drawStrokeArc
 		engine.AddEffect(e1)
 	}
 }

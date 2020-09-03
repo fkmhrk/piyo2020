@@ -16,6 +16,8 @@ func stage1(obj *gameObject, engine Engine) {
 			newEnemy.deadFunc = deadExplode
 			newEnemy.score = 100
 			newEnemy.size = 8
+			newEnemy.drawFunc = drawStatic
+			newEnemy.imageName = "player"
 			engine.AddEnemy(newEnemy)
 		}
 		return
@@ -34,6 +36,8 @@ func stage1(obj *gameObject, engine Engine) {
 			newEnemy.deadFunc = deadExplode
 			newEnemy.score = 100
 			newEnemy.size = 8
+			newEnemy.drawFunc = drawStatic
+			newEnemy.imageName = "player"
 			engine.AddEnemy(newEnemy)
 		}
 		return
@@ -52,6 +56,8 @@ func stage1(obj *gameObject, engine Engine) {
 			newEnemy.deadFunc = deadExplode
 			newEnemy.score = 100
 			newEnemy.size = 8
+			newEnemy.drawFunc = drawStatic
+			newEnemy.imageName = "player"
 			engine.AddEnemy(newEnemy)
 
 			newEnemy = newObject(objTypeEnemy, float64(16+24*x), 0)
@@ -60,6 +66,8 @@ func stage1(obj *gameObject, engine Engine) {
 			newEnemy.deadFunc = deadExplode
 			newEnemy.score = 100
 			newEnemy.size = 8
+			newEnemy.drawFunc = drawStatic
+			newEnemy.imageName = "player"
 			engine.AddEnemy(newEnemy)
 		}
 		return

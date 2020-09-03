@@ -1,7 +1,6 @@
 package game
 
 import (
-	"math"
 	"syscall/js"
 )
 
@@ -45,6 +44,8 @@ func New() Engine {
 	player := newObject(objTypePlayer, 160, 440)
 	player.deadFunc = deadExplode
 	player.size = 4
+	player.drawFunc = drawPlayer
+	player.imageName = "player"
 	stg := newObject(objTypeStage, 0, 0)
 	stg.moveFunc = stage1
 	return &engine{
@@ -108,14 +109,15 @@ func (e *engine) DoMainFrame(key int16, touchDX, touchDY int, ctx js.Value) {
 	moveEnemy(e.playerShots, e)
 	moveEnemy(e.effects, e)
 	hitCheck(e.player, e.playerShots, e.enemies, e)
+	checkPlayerIsDead(e.player, e)
 	e.stage.moveFunc(e.stage, e)
 	e.displayScore = calcDisplayScore(e.score, e.displayScore)
 
 	ctx.Call("clearRect", 0, 0, 320, 480)
-	drawEnemy(ctx, e.images, e.enemies)
-	drawEffects(ctx, e.images, e.effects)
-	drawShots(ctx, e.images, e.playerShots)
-	drawPlayer(ctx, e.images, e.player)
+	drawObjects(ctx, e.images, e.enemies)
+	drawObjects(ctx, e.images, e.effects)
+	drawObjects(ctx, e.images, e.playerShots)
+	e.player.drawFunc(ctx, e.player, e.images)
 	drawScore(ctx, e.images, e.displayScore, e.life)
 
 	e.enemies = pack(e.enemies)
@@ -126,23 +128,7 @@ func (e *engine) DoMainFrame(key int16, touchDX, touchDY int, ctx js.Value) {
 
 func movePlayer(player *gameObject, key int16, touchDX, touchDY int, engine Engine) {
 	if !player.alive {
-		player.frame--
-		if player.frame == 0 {
-			// game over check
-			if engine.Miss() {
-				player.alive = true
-				player.frame = 120
-				player.x = 160
-				player.y = 440
-			} else {
-				engine.ToGameOver()
-			}
-		}
 		return
-	}
-	if player.frame > 0 {
-		// blink frame
-		player.frame--
 	}
 	if key&1 != 0 {
 		player.y -= 4
@@ -180,6 +166,7 @@ func movePlayer(player *gameObject, key int16, touchDX, touchDY int, engine Engi
 			shot.vx = 0
 			shot.vy = -6
 			shot.size = 2
+			shot.drawFunc = drawFillArc
 			engine.AddPlayerShot(shot)
 		}
 	}
@@ -232,6 +219,30 @@ func hitCheckShotsToTargets(shots []*gameObject, targets []*gameObject, engine E
 	}
 }
 
+func checkPlayerIsDead(player *gameObject, engine Engine) {
+	if player.frame > 0 {
+		// blink frame
+		player.frame--
+	}
+	if player.alive {
+		return
+	}
+	// dead
+	if player.frame == 0 {
+		// game over check
+		if engine.Miss() {
+			player.alive = true
+			player.frame = 120
+			player.x = 160
+			player.y = 440
+		} else {
+			engine.ToGameOver()
+		}
+	}
+	return
+
+}
+
 func calcDisplayScore(score, displayScore int) int {
 	if score == displayScore {
 		return score
@@ -248,36 +259,9 @@ func calcDisplayScore(score, displayScore int) int {
 	return displayScore
 }
 
-func drawEnemy(ctx js.Value, images map[string]js.Value, enemies []*gameObject) {
-	for _, e := range enemies {
-		ctx.Call("drawImage", images["player"], e.x-12, e.y-12)
-	}
-}
-
-func drawEffects(ctx js.Value, images map[string]js.Value, effects []*gameObject) {
-	for _, e := range effects {
-		ctx.Call("beginPath")
-		ctx.Call("arc", e.x, e.y, 4, 0, math.Pi*2, true)
-		ctx.Call("stroke")
-	}
-}
-
-func drawShots(ctx js.Value, images map[string]js.Value, shots []*gameObject) {
-	for _, e := range shots {
-		ctx.Call("beginPath")
-		ctx.Call("arc", e.x, e.y, 4, 0, math.Pi*2, true)
-		ctx.Call("fill")
-	}
-}
-
-func drawPlayer(ctx js.Value, images map[string]js.Value, player *gameObject) {
-	if player.alive {
-		if player.frame%3 == 1 {
-			// blink
-			return
-		}
-		ctx.Call("drawImage", images["player"], 0, 0, 48, 48, player.x-24, player.y-24, 48, 48)
-		return
+func drawObjects(ctx js.Value, images map[string]js.Value, objs []*gameObject) {
+	for _, o := range objs {
+		o.drawFunc(ctx, o, images)
 	}
 }
 

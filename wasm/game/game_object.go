@@ -25,6 +25,8 @@ type gameObject struct {
 	score     int
 	moveFunc  moveFunc
 	deadFunc  deadFunc
+	drawFunc  drawFunc
+	imageName string
 }
 
 func newObject(objType int, x, y float64) *gameObject {
