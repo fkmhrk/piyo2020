@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	appVersion = "0.0.3"
+	appVersion = "0.0.4"
 )
 
 var (
@@ -73,21 +73,27 @@ func initListeners(document js.Value, canvas js.Value, engine game.Engine) {
 
 	keyDownEvent := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		event := args[0]
+
 		keyName := event.Get("key").String()
 		if keyName == "ArrowUp" {
 			key |= 1
+			event.Call("preventDefault")
 		}
 		if keyName == "ArrowDown" {
 			key |= 2
+			event.Call("preventDefault")
 		}
 		if keyName == "ArrowLeft" {
 			key |= 4
+			event.Call("preventDefault")
 		}
 		if keyName == "ArrowRight" {
 			key |= 8
+			event.Call("preventDefault")
 		}
 		if keyName == " " {
 			key |= 16
+			event.Call("preventDefault")
 		}
 		return nil
 	})
@@ -97,18 +103,23 @@ func initListeners(document js.Value, canvas js.Value, engine game.Engine) {
 		keyName := event.Get("key").String()
 		if keyName == "ArrowUp" {
 			key &= ^1
+			event.Call("preventDefault")
 		}
 		if keyName == "ArrowDown" {
 			key &= ^2
+			event.Call("preventDefault")
 		}
 		if keyName == "ArrowLeft" {
 			key &= ^4
+			event.Call("preventDefault")
 		}
 		if keyName == "ArrowRight" {
 			key &= ^8
+			event.Call("preventDefault")
 		}
 		if keyName == " " {
 			key &= ^16
+			event.Call("preventDefault")
 		}
 		return nil
 	})
