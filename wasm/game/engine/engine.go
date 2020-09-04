@@ -145,7 +145,7 @@ func (e *engine) Restart() {
 	e.hiddenEnemies = e.hiddenEnemies[:0]
 	e.effects = e.effects[:0]
 	e.stage.MoveFunc = move.Sequential
-	e.stage.SeqMoveFuncs = stage1.Seq
+	e.stage.SeqMoveFuncs = stage2.Seq
 	e.stage.Frame = 0
 	e.gameState = gameStateMain
 	e.life = 2
