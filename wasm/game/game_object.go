@@ -19,6 +19,7 @@ type gameObject struct {
 	size    float64
 	alive   bool
 	score   int
+	hp      int
 
 	moveFunc     moveFunc
 	frame        int

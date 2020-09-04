@@ -23,3 +23,9 @@ func deadExplode(engine Engine, obj *gameObject) {
 		engine.AddEffect(e1)
 	}
 }
+
+func deadStage1Boss(engine Engine, obj *gameObject) {
+	deadExplode(engine, obj)
+	engine.ShowBoss(nil) // clear
+	engine.GoToNextStage(2)
+}

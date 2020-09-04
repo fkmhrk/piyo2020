@@ -39,6 +39,32 @@ func moveLine(obj *gameObject, engine Engine) {
 	}
 }
 
+func moveLineWithFrame(obj *gameObject, engine Engine, frame int) {
+	obj.x += obj.vx
+	obj.y += obj.vy
+	if isOutOfScreen(obj) {
+		obj.alive = false
+	}
+}
+
+func moveSin(obj *gameObject, engine Engine, frame int) {
+	rad := math.Pi * 2 * float64(frame) / 240
+	obj.x += math.Sin(rad) * 2
+	obj.y += obj.vy
+	if isOutOfScreen(obj) {
+		obj.alive = false
+	}
+}
+
+func moveCos(obj *gameObject, engine Engine, frame int) {
+	rad := math.Pi * 2 * float64(frame) / 240
+	obj.x += math.Cos(rad) * 2
+	obj.y += obj.vy
+	if isOutOfScreen(obj) {
+		obj.alive = false
+	}
+}
+
 func moveFrameUp(obj *gameObject, engine Engine) {
 	obj.frame++
 	if obj.frame > 30 {

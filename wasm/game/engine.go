@@ -11,6 +11,8 @@ type Engine interface {
 	AddEnemy(enemy *gameObject)
 	AddEnemyShot(shot *gameObject)
 	AddEffect(effect *gameObject)
+	ShowBoss(boss *gameObject)
+	GoToNextStage(stage int)
 	Player() *gameObject
 
 	AddScore(value int)
@@ -38,8 +40,11 @@ type engine struct {
 	stage         *gameObject
 	gameState     gameState
 	life          int
+	stageCount    int
 	score         int
 	displayScore  int
+	boss          *gameObject
+	bossMaxHP     int
 }
 
 // New creates engine instance
@@ -62,8 +67,10 @@ func New() Engine {
 		stage:         stg,
 		gameState:     gameStateMain,
 		life:          3,
+		stageCount:    1,
 		score:         0,
 		displayScore:  0,
+		boss:          nil,
 	}
 }
 
@@ -93,6 +100,27 @@ func (e *engine) AddEffect(effect *gameObject) {
 	e.effects = append(e.effects, effect)
 }
 
+func (e *engine) ShowBoss(boss *gameObject) {
+	if boss == nil {
+		e.boss = nil
+		return
+	}
+	e.AddEnemy(boss)
+	e.boss = boss
+	e.bossMaxHP = boss.hp
+}
+
+func (e *engine) GoToNextStage(stage int) {
+	e.stageCount++
+	e.stage.frame = 0
+	switch stage {
+	case 1:
+		e.stage.seqMoveFuncs = stage1Seq
+	case 2:
+		e.stage.seqMoveFuncs = stage2Seq
+	}
+}
+
 func (e *engine) Player() *gameObject {
 	return e.player
 }
@@ -112,7 +140,7 @@ func (e *engine) ToGameOver() {
 	block := document.Call("getElementById", "gameover-block")
 	block.Get("style").Set("display", "flex")
 
-	js.Global().Call("setShareText", 1, e.score)
+	js.Global().Call("setShareText", e.stageCount, e.score)
 }
 
 func (e *engine) Restart() {
@@ -132,6 +160,7 @@ func (e *engine) Restart() {
 	e.life = 3
 	e.score = 0
 	e.displayScore = 0
+	e.boss = nil
 }
 
 func (e *engine) DoFrame(key int16, touchDX, touchDY int, ctx js.Value) {
@@ -159,7 +188,7 @@ func (e *engine) DoMainFrame(key int16, touchDX, touchDY int, ctx js.Value) {
 	drawObjects(ctx, e.images, e.effects)
 	drawObjects(ctx, e.images, e.playerShots)
 	e.player.drawFunc(ctx, e.player, e.images)
-	drawScore(ctx, e.images, e.displayScore, e.life)
+	drawScore(ctx, e.images, e.displayScore, e.life, e.boss, e.bossMaxHP)
 
 	e.enemies = pack(e.enemies)
 	e.enemyShots = pack(e.enemyShots)
@@ -260,6 +289,11 @@ func hitCheckShotsToTargets(shots []*gameObject, targets []*gameObject, engine E
 		for _, t := range targets {
 			if isHit(s, t) {
 				s.alive = false
+				t.hp--
+				if t.hp > 0 {
+					break
+				}
+				// killed!
 				t.alive = false
 				engine.AddScore(t.score)
 				if t.deadFunc != nil {
@@ -305,7 +339,7 @@ func calcDisplayScore(score, displayScore int) int {
 	if score-displayScore > 100 {
 		displayScore += 10
 	}
-	if score-displayScore > 1 {
+	if score-displayScore >= 1 {
 		displayScore++
 	}
 	return displayScore
@@ -317,7 +351,14 @@ func drawObjects(ctx js.Value, images map[string]*jsImage, objs []*gameObject) {
 	}
 }
 
-func drawScore(ctx js.Value, images map[string]*jsImage, score int, life int) {
+func drawScore(
+	ctx js.Value,
+	images map[string]*jsImage,
+	score int,
+	life int,
+	boss *gameObject,
+	bossMaxHP int,
+) {
 	x := 18 * 8
 	numImage := images["number"]
 	for {
@@ -332,6 +373,10 @@ func drawScore(ctx js.Value, images map[string]*jsImage, score int, life int) {
 	image := images["heart"]
 	for x := 0; x < life; x++ {
 		ctx.Call("drawImage", image.value, 0, 0, 36, 36, x*18, 18, 18, 18)
+	}
+	if boss != nil {
+		barSize := 288 * boss.hp / bossMaxHP
+		ctx.Call("fillRect", 24, 36, barSize, 9)
 	}
 }
 

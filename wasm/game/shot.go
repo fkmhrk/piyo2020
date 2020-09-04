@@ -42,10 +42,31 @@ func shotAim(obj *gameObject, engine Engine, frame int) {
 	engine.AddEnemyShot(shot)
 }
 
+func shotAim5(obj *gameObject, engine Engine, frame int) {
+	if frame%30 != 0 {
+		return
+	}
+	p := engine.Player()
+	rad := math.Atan2(p.y-obj.y, p.x-obj.x)
+	for i := 0; i < 5; i++ {
+		speed := float64(i + 1)
+		shot := newObject(objTypeEnemyShot, obj.x, obj.y)
+		shot.vx = math.Cos(rad) * speed
+		shot.vy = math.Sin(rad) * speed
+		shot.moveFunc = moveLine
+		shot.drawFunc = drawStrokeArc
+		engine.AddEnemyShot(shot)
+	}
+}
+
 var (
 	shotSeqWaitAim seqShotFuncs = seqShotFuncs{
 		&seqShot{frame: 60, f: shotNop},
 		&seqShot{frame: 1, f: shotAim},
 		&seqShot{frame: 9999, f: shotNop},
+	}
+	shotSeqStage1Boss seqShotFuncs = seqShotFuncs{
+		&seqShot{frame: 60, f: shotNop},
+		&seqShot{frame: 9999, f: shotAim5},
 	}
 )
