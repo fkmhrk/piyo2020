@@ -46,7 +46,8 @@ func New() game.Engine {
 	stg := game.NewObject(game.ObjTypeStage, 0, 0)
 	stg.MoveFunc = move.Sequential
 	stg.SeqMoveFuncs = stage1.Seq
-	return &engine{
+
+	e := &engine{
 		images:        make(map[string]*game.JsImage),
 		player:        player,
 		enemies:       make([]*game.GameObject, 0, 100),
@@ -61,6 +62,8 @@ func New() game.Engine {
 		displayScore:  0,
 		boss:          nil,
 	}
+	e.Restart()
+	return e
 }
 
 func (e *engine) AddImage(key string, image js.Value, width, height float64) {
@@ -148,6 +151,7 @@ func (e *engine) Restart() {
 	e.gameState = gameStateMain
 	e.life = 2
 	e.score = 0
+	e.stageCount = 1
 	e.displayScore = 0
 	e.boss = nil
 }
