@@ -5,6 +5,7 @@ import (
 	"syscall/js"
 
 	"github.com/fkmhrk/go-wasm-stg/game"
+	"github.com/fkmhrk/go-wasm-stg/game/engine"
 )
 
 const (
@@ -31,7 +32,7 @@ func main() {
 
 	printVersion(document)
 
-	engine := game.New()
+	engine := engine.New()
 
 	initListeners(document, canvas, engine)
 

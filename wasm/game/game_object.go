@@ -1,53 +1,67 @@
 package game
 
-import "math"
-
-const (
-	objTypePlayer     = 1
-	objTypePlayerShot = 2
-	objTypeEnemy      = 3
-	objTypeEnemyShot  = 4
-	objTypeStage      = 5
+import (
+	"math"
+	"syscall/js"
 )
 
-type gameObject struct {
-	objType int
-	x       float64
-	y       float64
-	vx      float64
-	vy      float64
-	size    float64
-	alive   bool
-	score   int
-	hp      int
+const (
+	ObjTypePlayer     = 1
+	ObjTypePlayerShot = 2
+	ObjTypeEnemy      = 3
+	ObjTypeEnemyShot  = 4
+	ObjTypeStage      = 5
+)
 
-	moveFunc     moveFunc
-	frame        int
-	seqMoveFuncs seqMoveFuncs
-
-	deadFunc  deadFunc
-	drawFunc  drawFunc
-	imageName string
-
-	shotFunc     shotFunc
-	shotFrame    int
-	seqShotFuncs seqShotFuncs
+// JsImage is an image for JavaScript
+type JsImage struct {
+	Value   js.Value
+	Width   float64
+	Height  float64
+	Width2  float64
+	Height2 float64
 }
 
-func newObject(objType int, x, y float64) *gameObject {
-	return &gameObject{
-		objType:  objType,
-		x:        x,
-		y:        y,
-		alive:    true,
-		moveFunc: nil,
+// GameObject is a basic object
+type GameObject struct {
+	ObjType int
+	X       float64
+	Y       float64
+	Vx      float64
+	Vy      float64
+	Size    float64
+	Alive   bool
+	Score   int
+	HP      int
+
+	MoveFunc     MoveFunc
+	Frame        int
+	SeqMoveFuncs SeqMoveFuncs
+
+	DeadFunc  DeadFunc
+	DrawFunc  DrawFunc
+	ImageName string
+
+	ShotFunc     ShotFunc
+	ShotFrame    int
+	SeqShotFuncs SeqShotFuncs
+}
+
+// NewObject cretes new object
+func NewObject(objType int, x, y float64) *GameObject {
+	return &GameObject{
+		ObjType:  objType,
+		X:        x,
+		Y:        y,
+		Alive:    true,
+		MoveFunc: nil,
 	}
 }
 
-func isHit(obj1 *gameObject, obj2 *gameObject) bool {
-	xDiff := obj1.x - obj2.x
-	yDiff := obj1.y - obj2.y
-	size := obj1.size + obj2.size
+func IsHit(obj1 *GameObject, obj2 *GameObject) bool {
+	xDiff := obj1.X - obj2.X
+	yDiff := obj1.Y - obj2.Y
+	size := obj1.Size + obj2.Size
 	dist := math.Sqrt(xDiff*xDiff + yDiff*yDiff)
 	return dist < size
 }
