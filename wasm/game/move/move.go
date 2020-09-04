@@ -85,6 +85,20 @@ func StopAim(obj *game.GameObject, engine game.Engine) {
 	}
 }
 
+func SlowAfter60(obj *game.GameObject, engine game.Engine) {
+	obj.Frame++
+	if obj.Frame < 60 {
+		Line(obj, engine)
+		return
+	}
+	if obj.Frame == 60 {
+		obj.Vy /= 2
+		Line(obj, engine)
+		return
+	}
+	Line(obj, engine)
+}
+
 func isOutOfScreen(obj *game.GameObject) bool {
 	if obj.X < -16 || obj.X > 336 {
 		return true

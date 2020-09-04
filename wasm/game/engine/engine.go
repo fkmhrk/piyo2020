@@ -45,7 +45,6 @@ func New() game.Engine {
 	player.ImageName = "player"
 	stg := game.NewObject(game.ObjTypeStage, 0, 0)
 	stg.MoveFunc = move.Sequential
-	stg.SeqMoveFuncs = stage1.Seq
 
 	e := &engine{
 		images:        make(map[string]*game.JsImage),

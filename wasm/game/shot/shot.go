@@ -55,10 +55,33 @@ func Aim5(obj *game.GameObject, engine game.Engine, frame int) {
 	}
 }
 
+func Fan3(obj *game.GameObject, engine game.Engine, frame int) {
+	if frame%10 != 0 {
+		return
+	}
+	loop := frame/10 - 1
+	p := engine.Player()
+	rad := math.Atan2(p.Y-obj.Y, p.X-obj.X) + math.Pi*2*float64(loop)/12
+	speed := float64(4)
+	for i := 0; i < 3; i++ {
+		shot := game.NewObject(game.ObjTypeEnemyShot, obj.X, obj.Y)
+		shot.Vx = math.Cos(rad) * speed
+		shot.Vy = math.Sin(rad) * speed
+		shot.MoveFunc = move.Line
+		shot.DrawFunc = draw.StrokeArc
+		engine.AddEnemyShot(shot)
+		rad += math.Pi * 2 / 3
+	}
+}
+
 var (
 	SeqWaitAim game.SeqShotFuncs = game.SeqShotFuncs{
 		&game.SeqShot{Frame: 60, Func: Nop},
 		&game.SeqShot{Frame: 1, Func: Aim},
 		&game.SeqShot{Frame: 9999, Func: Nop},
+	}
+	Seq3Fan game.SeqShotFuncs = game.SeqShotFuncs{
+		&game.SeqShot{Frame: 60, Func: Nop},
+		&game.SeqShot{Frame: 9999, Func: Fan3},
 	}
 )
