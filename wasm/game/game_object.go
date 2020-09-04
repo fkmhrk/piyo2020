@@ -10,24 +10,27 @@ const (
 	objTypeStage      = 5
 )
 
-type moveFunc func(obj *gameObject, engine Engine)
-
 type gameObject struct {
-	objType   int
-	x         float64
-	y         float64
-	vx        float64
-	vy        float64
-	size      float64
-	alive     bool
-	frame     int
-	score     int
-	moveFunc  moveFunc
+	objType int
+	x       float64
+	y       float64
+	vx      float64
+	vy      float64
+	size    float64
+	alive   bool
+	score   int
+
+	moveFunc     moveFunc
+	frame        int
+	seqMoveFuncs seqMoveFuncs
+
 	deadFunc  deadFunc
 	drawFunc  drawFunc
 	imageName string
-	shotFunc  shotFunc
-	shotFrame int
+
+	shotFunc     shotFunc
+	shotFrame    int
+	seqShotFuncs seqShotFuncs
 }
 
 func newObject(objType int, x, y float64) *gameObject {

@@ -49,7 +49,8 @@ func New() Engine {
 	player.drawFunc = drawPlayer
 	player.imageName = "player"
 	stg := newObject(objTypeStage, 0, 0)
-	stg.moveFunc = stage1
+	stg.moveFunc = moveSequential
+	stg.seqMoveFuncs = stage1Seq
 	return &engine{
 		images:        make(map[string]*jsImage),
 		player:        player,

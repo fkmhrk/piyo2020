@@ -2,6 +2,35 @@ package game
 
 import "math"
 
+type moveFunc func(obj *gameObject, engine Engine)
+type seqMoveFunc func(obj *gameObject, engine Engine, frame int)
+
+type seqMove struct {
+	frame int
+	f     seqMoveFunc
+}
+
+type seqMoveFuncs []*seqMove
+
+func moveSequential(obj *gameObject, engine Engine) {
+	obj.frame++
+	frame := obj.frame
+	for i := 0; i < len(obj.seqMoveFuncs); i++ {
+		s := obj.seqMoveFuncs[i]
+		if frame <= s.frame {
+			s.f(obj, engine, frame)
+			return
+		}
+		frame -= s.frame
+	}
+	// reset
+	obj.frame = 0
+}
+
+func moveNop(obj *gameObject, engine Engine, frame int) {
+	// nop!
+}
+
 func moveLine(obj *gameObject, engine Engine) {
 	obj.x += obj.vx
 	obj.y += obj.vy
