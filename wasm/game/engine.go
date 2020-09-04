@@ -16,6 +16,7 @@ type Engine interface {
 	AddScore(value int)
 	Miss() bool
 	ToGameOver()
+	Restart()
 	DoFrame(key int16, touchDX, touchDY int, ctx js.Value)
 }
 
@@ -107,6 +108,30 @@ func (e *engine) Miss() bool {
 
 func (e *engine) ToGameOver() {
 	e.gameState = gameStateGameOver
+	document := js.Global().Get("document")
+	block := document.Call("getElementById", "gameover-block")
+	block.Get("style").Set("display", "flex")
+
+	js.Global().Call("setShareText", 1, e.score)
+}
+
+func (e *engine) Restart() {
+	e.player.alive = true
+	e.player.frame = 0
+	e.player.x = 160
+	e.player.y = 440
+
+	e.enemies = e.enemies[:0]
+	e.enemyShots = e.enemyShots[:0]
+	e.hiddenEnemies = e.hiddenEnemies[:0]
+	e.effects = e.effects[:0]
+	e.stage.moveFunc = moveSequential
+	e.stage.seqMoveFuncs = stage1Seq
+	e.stage.frame = 0
+	e.gameState = gameStateMain
+	e.life = 3
+	e.score = 0
+	e.displayScore = 0
 }
 
 func (e *engine) DoFrame(key int16, touchDX, touchDY int, ctx js.Value) {

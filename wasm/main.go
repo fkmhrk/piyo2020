@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	appVersion = "0.0.1"
+	appVersion = "0.0.2"
 )
 
 var (
@@ -40,6 +40,12 @@ func main() {
 		return nil
 	})
 	js.Global().Set("start", startFunc)
+
+	restartFunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		engine.Restart()
+		return nil
+	})
+	js.Global().Set("restart", restartFunc)
 
 	fmt.Println("Initialization is OK")
 	done := make(chan struct{}, 0)

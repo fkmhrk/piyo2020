@@ -12,6 +12,7 @@ declare function setImage(
   height: number
 ): void;
 declare function start(): void;
+declare function restart(): void;
 
 const loadImage = (src: string) =>
   new Promise((resolve: (img: HTMLImageElement) => void, reject) => {
@@ -21,6 +22,13 @@ const loadImage = (src: string) =>
       resolve(img);
     };
   });
+
+(<any>window).setShareText = (stage: number, score: number) => {
+  const button = document.querySelector("#tweet-button") as HTMLButtonElement;
+  button.onclick = () => {
+    window.location.href = `https://twitter.com/intent/tweet?text=I reached Stage ${stage} and got ${score} Points!&url=https:%2f%2ffkmhrk.github.io%2fgo-wasm-stg%2f`;
+  };
+};
 
 if (!WebAssembly.instantiateStreaming) {
   // polyfill
@@ -62,6 +70,14 @@ if (!WebAssembly.instantiateStreaming) {
     button.addEventListener("click", () => {
       button.hidden = true;
       start();
+    });
+    const restartButton = document.querySelector(
+      "#restart"
+    ) as HTMLButtonElement;
+    restartButton.addEventListener("click", () => {
+      const block = document.querySelector("#gameover-block") as HTMLDivElement;
+      block.style.display = "none";
+      restart();
     });
   } catch (err) {
     console.error(err);

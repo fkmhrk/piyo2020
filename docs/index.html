@@ -6,8 +6,31 @@
   </head>
   <body>
     <div style="width: 320px; margin: 0 auto">
-      <div style="margin-top: 16px">
+      <div style="margin-top: 16px; position: relative; height: 480px">
         <canvas id="canvas" width="320" height="480"></canvas>
+        <div
+          id="gameover-block"
+          style="
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: none;
+            justify-content: center;
+            align-items: center;
+          "
+        >
+          <div>
+            <p>GAME OVER</p>
+            <div style="text-align: center">
+              <button id="tweet-button">Tweet</button>
+            </div>
+            <div style="text-align: center; margin-top: 8px">
+              <button id="restart">Restart</button>
+            </div>
+          </div>
+        </div>
       </div>
       <div style="text-align: center">
         <button id="start">Start</button>
