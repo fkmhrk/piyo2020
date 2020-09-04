@@ -66,7 +66,7 @@ func New() Engine {
 		effects:       make([]*gameObject, 0, 100),
 		stage:         stg,
 		gameState:     gameStateMain,
-		life:          3,
+		life:          2,
 		stageCount:    1,
 		score:         0,
 		displayScore:  0,
@@ -157,7 +157,7 @@ func (e *engine) Restart() {
 	e.stage.seqMoveFuncs = stage1Seq
 	e.stage.frame = 0
 	e.gameState = gameStateMain
-	e.life = 3
+	e.life = 2
 	e.score = 0
 	e.displayScore = 0
 	e.boss = nil
