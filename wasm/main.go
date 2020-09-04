@@ -7,6 +7,10 @@ import (
 	"github.com/fkmhrk/go-wasm-stg/game"
 )
 
+const (
+	appVersion = "0.0.1"
+)
+
 var (
 	key         int16
 	ctx         js.Value
@@ -25,6 +29,8 @@ func main() {
 	canvas := document.Call("getElementById", "canvas")
 	ctx = canvas.Call("getContext", "2d")
 
+	printVersion(document)
+
 	engine := game.New()
 
 	initListeners(document, canvas, engine)
@@ -39,6 +45,11 @@ func main() {
 	done := make(chan struct{}, 0)
 
 	<-done
+}
+
+func printVersion(document js.Value) {
+	pElem := document.Call("getElementById", "version")
+	pElem.Set("innerText", fmt.Sprintf("Version %s", appVersion))
 }
 
 func initListeners(document js.Value, canvas js.Value, engine game.Engine) {

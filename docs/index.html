@@ -5,16 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
   <body>
-    <div>
-      <canvas
-        id="canvas"
-        width="320"
-        height="480"
-        style="display: block; margin: 16px auto"
-      ></canvas>
-    </div>
-    <div style="text-align: center">
-      <button id="start">Start</button>
+    <div style="width: 320px; margin: 0 auto">
+      <div style="margin-top: 16px">
+        <canvas id="canvas" width="320" height="480"></canvas>
+      </div>
+      <div style="text-align: center">
+        <button id="start">Start</button>
+      </div>
+      <div>
+        <h2>How to play</h2>
+        <p>
+          Arrow : Move<br />
+          Space : Shot<br />
+          Touch(mobile): Move &amp; Shot
+        </p>
+      </div>
+      <div>
+        <p id="version">Version</p>
+      </div>
     </div>
     <script src="./wasm_exec.js"></script>
     <script src="./main.js"></script>
