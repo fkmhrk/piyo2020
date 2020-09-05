@@ -281,6 +281,7 @@ func hitCheckShotsToTargets(shots []*game.GameObject, targets []*game.GameObject
 		for _, t := range targets {
 			if game.IsHit(s, t) {
 				s.Alive = false
+				engine.AddScore(10)
 				t.HP--
 				if t.HP > 0 {
 					break

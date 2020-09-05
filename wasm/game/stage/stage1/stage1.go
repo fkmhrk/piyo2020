@@ -41,14 +41,14 @@ var (
 func stage1_1(obj *game.GameObject, engine game.Engine, frame int) {
 	if frame%5 == 0 {
 		x := frame / 5
-		newEnemy := game.NewObject(game.ObjTypeEnemy, float64(16+24*x), 0)
+		newEnemy := game.NewObject(game.ObjTypeEnemy, float64(16+28*x), 0)
 		newEnemy.MoveFunc = move.StopAim
 		newEnemy.Vy = 3
 		newEnemy.DeadFunc = dead.SoloExplode
 		newEnemy.Score = 100
 		newEnemy.Size = 8
 		newEnemy.DrawFunc = draw.Static
-		newEnemy.ImageName = "player"
+		newEnemy.ImageName = "enemy1"
 		newEnemy.ShotFunc = shot.Sequential
 		newEnemy.ShotFrame = 0
 		newEnemy.SeqShotFuncs = shot.SeqWaitAim
@@ -59,14 +59,14 @@ func stage1_1(obj *game.GameObject, engine game.Engine, frame int) {
 func stage1_2(obj *game.GameObject, engine game.Engine, frame int) {
 	if frame%5 == 0 {
 		x := frame / 5
-		newEnemy := game.NewObject(game.ObjTypeEnemy, float64(304-24*x), 0)
+		newEnemy := game.NewObject(game.ObjTypeEnemy, float64(304-28*x), 0)
 		newEnemy.MoveFunc = move.StopAim
 		newEnemy.Vy = 3
 		newEnemy.DeadFunc = dead.SoloExplode
 		newEnemy.Score = 100
 		newEnemy.Size = 8
 		newEnemy.DrawFunc = draw.Static
-		newEnemy.ImageName = "player"
+		newEnemy.ImageName = "enemy1"
 		newEnemy.ShotFunc = shot.Sequential
 		newEnemy.ShotFrame = 0
 		newEnemy.SeqShotFuncs = shot.SeqWaitAim
@@ -77,27 +77,27 @@ func stage1_2(obj *game.GameObject, engine game.Engine, frame int) {
 func stage1_3(obj *game.GameObject, engine game.Engine, frame int) {
 	if frame%5 == 0 {
 		x := frame / 5
-		newEnemy := game.NewObject(game.ObjTypeEnemy, float64(304-24*x), 0)
+		newEnemy := game.NewObject(game.ObjTypeEnemy, float64(304-28*x), 0)
 		newEnemy.MoveFunc = move.StopAim
 		newEnemy.Vy = 3
 		newEnemy.DeadFunc = dead.SoloExplode
 		newEnemy.Score = 100
 		newEnemy.Size = 8
 		newEnemy.DrawFunc = draw.Static
-		newEnemy.ImageName = "player"
+		newEnemy.ImageName = "enemy1"
 		newEnemy.ShotFunc = shot.Sequential
 		newEnemy.ShotFrame = 0
 		newEnemy.SeqShotFuncs = shot.SeqWaitAim
 		engine.AddEnemy(newEnemy)
 
-		newEnemy = game.NewObject(game.ObjTypeEnemy, float64(16+24*x), 0)
+		newEnemy = game.NewObject(game.ObjTypeEnemy, float64(16+28*x), 0)
 		newEnemy.MoveFunc = move.StopAim
 		newEnemy.Vy = 3
 		newEnemy.DeadFunc = dead.SoloExplode
 		newEnemy.Score = 100
 		newEnemy.Size = 8
 		newEnemy.DrawFunc = draw.Static
-		newEnemy.ImageName = "player"
+		newEnemy.ImageName = "enemy1"
 		newEnemy.ShotFunc = shot.Sequential
 		newEnemy.ShotFrame = 0
 		newEnemy.SeqShotFuncs = shot.SeqWaitAim
@@ -115,7 +115,7 @@ func stage1_4(obj *game.GameObject, engine game.Engine, frame int) {
 		newEnemy.Score = 100
 		newEnemy.Size = 8
 		newEnemy.DrawFunc = draw.Static
-		newEnemy.ImageName = "player"
+		newEnemy.ImageName = "enemy1"
 		newEnemy.ShotFunc = shot.Sequential
 		newEnemy.ShotFrame = 0
 		newEnemy.SeqShotFuncs = shot.SeqWaitAim
@@ -149,7 +149,7 @@ func stage1Boss(obj *game.GameObject, engine game.Engine, frame int) {
 	newEnemy.Score = 10000
 	newEnemy.Size = 16
 	newEnemy.DrawFunc = draw.Static
-	newEnemy.ImageName = "player"
+	newEnemy.ImageName = "enemy1"
 	newEnemy.ShotFunc = shot.Sequential
 	newEnemy.ShotFrame = 0
 	newEnemy.SeqShotFuncs = shotBoss

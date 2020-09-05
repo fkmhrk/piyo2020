@@ -52,7 +52,7 @@ func step1_1(obj *game.GameObject, engine game.Engine, frame int) {
 	newEnemy.Score = 500
 	newEnemy.Size = 8
 	newEnemy.DrawFunc = draw.Static
-	newEnemy.ImageName = "player"
+	newEnemy.ImageName = "enemy2"
 	newEnemy.ShotFunc = shot.Sequential
 	newEnemy.ShotFrame = 0
 	newEnemy.SeqShotFuncs = shot.Seq3Fan
@@ -71,7 +71,7 @@ func step1_2(obj *game.GameObject, engine game.Engine, frame int) {
 		newEnemy.Score = 150
 		newEnemy.Size = 8
 		newEnemy.DrawFunc = draw.Static
-		newEnemy.ImageName = "player"
+		newEnemy.ImageName = "enemy1"
 		newEnemy.ShotFunc = shot.Sequential
 		newEnemy.ShotFrame = 0
 		newEnemy.SeqShotFuncs = shot.SeqWaitAim
@@ -88,7 +88,7 @@ func step2_1(obj *game.GameObject, engine game.Engine, frame int) {
 	newEnemy.Score = 500
 	newEnemy.Size = 8
 	newEnemy.DrawFunc = draw.Static
-	newEnemy.ImageName = "player"
+	newEnemy.ImageName = "enemy2"
 	newEnemy.ShotFunc = shot.Sequential
 	newEnemy.ShotFrame = 0
 	newEnemy.SeqShotFuncs = shot.Seq3Fan
@@ -107,7 +107,7 @@ func step2_2(obj *game.GameObject, engine game.Engine, frame int) {
 		newEnemy.Score = 150
 		newEnemy.Size = 8
 		newEnemy.DrawFunc = draw.Static
-		newEnemy.ImageName = "player"
+		newEnemy.ImageName = "enemy1"
 		newEnemy.ShotFunc = shot.Sequential
 		newEnemy.ShotFrame = 0
 		newEnemy.SeqShotFuncs = shot.SeqWaitAim
@@ -123,7 +123,7 @@ func step3_1(obj *game.GameObject, engine game.Engine, frame int) {
 	newEnemy.Score = 500
 	newEnemy.Size = 8
 	newEnemy.DrawFunc = draw.Static
-	newEnemy.ImageName = "player"
+	newEnemy.ImageName = "enemy2"
 	newEnemy.ShotFunc = shot.Sequential
 	newEnemy.ShotFrame = 0
 	newEnemy.SeqShotFuncs = shot.Seq3Fan
@@ -143,7 +143,7 @@ func step3_2(obj *game.GameObject, engine game.Engine, frame int) {
 		newEnemy.Score = 150
 		newEnemy.Size = 8
 		newEnemy.DrawFunc = draw.Static
-		newEnemy.ImageName = "player"
+		newEnemy.ImageName = "enemy1"
 		newEnemy.ShotFunc = shot.Sequential
 		newEnemy.ShotFrame = 0
 		newEnemy.SeqShotFuncs = shot.SeqWaitAim
@@ -165,7 +165,7 @@ func step4(obj *game.GameObject, engine game.Engine, frame int) {
 	newEnemy.Score = 150
 	newEnemy.Size = 8
 	newEnemy.DrawFunc = draw.Static
-	newEnemy.ImageName = "player"
+	newEnemy.ImageName = "enemy1"
 	newEnemy.ShotFunc = shot.Sequential
 	newEnemy.ShotFrame = 0
 	newEnemy.SeqShotFuncs = shot.Seq3Way
@@ -184,7 +184,7 @@ func boss(obj *game.GameObject, engine game.Engine, frame int) {
 	newEnemy.Score = 30000
 	newEnemy.Size = 16
 	newEnemy.DrawFunc = draw.Static
-	newEnemy.ImageName = "player"
+	newEnemy.ImageName = "enemy2"
 	newEnemy.ShotFunc = shot.Sequential
 	newEnemy.ShotFrame = 0
 	newEnemy.SeqShotFuncs = shotBoss
