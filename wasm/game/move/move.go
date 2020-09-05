@@ -108,3 +108,23 @@ func isOutOfScreen(obj *game.GameObject) bool {
 	}
 	return false
 }
+
+var (
+	SeqStage game.SeqMoveFuncs = game.SeqMoveFuncs{
+		&game.SeqMove{
+			Frame: 60,
+			Func:  LineWithFrame,
+		},
+		&game.SeqMove{
+			Frame: 1,
+			Func: func(obj *game.GameObject, engine game.Engine, frame int) {
+				obj.Vx = 0
+				obj.Vy = -2
+			},
+		},
+		&game.SeqMove{
+			Frame: 9999,
+			Func:  LineWithFrame,
+		},
+	}
+)

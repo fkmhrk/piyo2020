@@ -14,6 +14,8 @@ import (
 var (
 	Seq game.SeqMoveFuncs = game.SeqMoveFuncs{
 		&game.SeqMove{Frame: 180, Func: move.Nop},
+		&game.SeqMove{Frame: 1, Func: stageText},
+		&game.SeqMove{Frame: 120, Func: move.Nop},
 		&game.SeqMove{Frame: 1, Func: step1_1},
 		&game.SeqMove{Frame: 120, Func: step1_2},
 		&game.SeqMove{Frame: 120, Func: move.Nop},
@@ -42,6 +44,21 @@ var (
 		&game.SeqMove{Frame: 9999, Func: move.Nop},
 	}
 )
+
+func stageText(obj *game.GameObject, engine game.Engine, frame int) {
+	newEnemy := game.NewObject(game.ObjTypeEnemy, 320, 120)
+	newEnemy.MoveFunc = move.Sequential
+	newEnemy.SeqMoveFuncs = move.SeqStage
+	newEnemy.HP = 9999
+	newEnemy.Vx = -4
+	newEnemy.DeadFunc = dead.SoloExplode
+	newEnemy.Score = 0
+	newEnemy.Size = 16
+	newEnemy.DrawFunc = draw.StageText(2)
+	newEnemy.ShotFunc = nil
+	newEnemy.ShotFrame = 0
+	engine.AddEnemy(newEnemy)
+}
 
 func step1_1(obj *game.GameObject, engine game.Engine, frame int) {
 	newEnemy := game.NewObject(game.ObjTypeEnemy, 240, 0)

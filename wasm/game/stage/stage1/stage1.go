@@ -13,6 +13,8 @@ import (
 var (
 	Seq game.SeqMoveFuncs = game.SeqMoveFuncs{
 		&game.SeqMove{Frame: 120, Func: move.Nop},
+		&game.SeqMove{Frame: 1, Func: stageText},
+		&game.SeqMove{Frame: 120, Func: move.Nop},
 		&game.SeqMove{Frame: 30, Func: stage1_1},
 		&game.SeqMove{Frame: 120, Func: move.Nop},
 		&game.SeqMove{Frame: 30, Func: stage1_2},
@@ -37,6 +39,21 @@ var (
 		&game.SeqMove{Frame: 6000, Func: stage1_4},
 	}
 )
+
+func stageText(obj *game.GameObject, engine game.Engine, frame int) {
+	newEnemy := game.NewObject(game.ObjTypeEnemy, 320, 120)
+	newEnemy.MoveFunc = move.Sequential
+	newEnemy.SeqMoveFuncs = move.SeqStage
+	newEnemy.HP = 9999
+	newEnemy.Vx = -4
+	newEnemy.DeadFunc = dead.SoloExplode
+	newEnemy.Score = 0
+	newEnemy.Size = 16
+	newEnemy.DrawFunc = draw.StageText(1)
+	newEnemy.ShotFunc = nil
+	newEnemy.ShotFrame = 0
+	engine.AddEnemy(newEnemy)
+}
 
 func stage1_1(obj *game.GameObject, engine game.Engine, frame int) {
 	if frame%5 == 0 {

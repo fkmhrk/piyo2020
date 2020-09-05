@@ -1,6 +1,7 @@
 package draw
 
 import (
+	"fmt"
 	"math"
 	"syscall/js"
 
@@ -28,6 +29,14 @@ func FillArc(ctx js.Value, obj *game.GameObject, images map[string]*game.JsImage
 	ctx.Call("beginPath")
 	ctx.Call("arc", obj.X, obj.Y, 4, 0, math.Pi*2, true)
 	ctx.Call("fill")
+}
+
+func StageText(stage int) func(ctx js.Value, obj *game.GameObject, images map[string]*game.JsImage) {
+	text := fmt.Sprintf("Stage %d", stage)
+	return func(ctx js.Value, obj *game.GameObject, images map[string]*game.JsImage) {
+		ctx.Set("font", "32px sans-serif")
+		ctx.Call("fillText", text, obj.X, obj.Y)
+	}
 }
 
 func Player(ctx js.Value, obj *game.GameObject, images map[string]*game.JsImage) {
