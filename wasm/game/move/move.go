@@ -41,6 +41,26 @@ func LineWithFrame(obj *game.GameObject, engine game.Engine, frame int) {
 	}
 }
 
+func LineReflect(obj *game.GameObject, engine game.Engine) {
+	obj.X += obj.Vx
+	obj.Y += obj.Vy
+	if obj.X < 0 {
+		obj.Vx = -obj.Vx
+		obj.X += obj.Vx
+	}
+	if obj.X > 320 {
+		obj.Vx = -obj.Vx
+		obj.X += obj.Vx
+	}
+	if obj.Y < 0 {
+		obj.Vy = obj.Vy
+		obj.Y += obj.Vy
+	}
+	if isOutOfScreen(obj) {
+		obj.Alive = false
+	}
+}
+
 func Sin(obj *game.GameObject, engine game.Engine, frame int) {
 	rad := math.Pi * 2 * float64(frame) / 240
 	obj.X += math.Sin(rad) * 2

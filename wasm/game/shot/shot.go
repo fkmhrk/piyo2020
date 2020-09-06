@@ -74,6 +74,25 @@ func Fan3(obj *game.GameObject, engine game.Engine, frame int) {
 	}
 }
 
+func Fan5(obj *game.GameObject, engine game.Engine, frame int) {
+	if frame%15 != 0 {
+		return
+	}
+	loop := frame/15 - 1
+	p := engine.Player()
+	rad := math.Atan2(p.Y-obj.Y, p.X-obj.X) + math.Pi*2*float64(loop)/12
+	speed := float64(2)
+	for i := 0; i < 5; i++ {
+		shot := game.NewObject(game.ObjTypeEnemyShot, obj.X, obj.Y)
+		shot.Vx = math.Cos(rad) * speed
+		shot.Vy = math.Sin(rad) * speed
+		shot.MoveFunc = move.LineReflect
+		shot.DrawFunc = draw.StrokeArc
+		engine.AddEnemyShot(shot)
+		rad += math.Pi * 2 / 5
+	}
+}
+
 func Circle32(obj *game.GameObject, engine game.Engine, frame int) {
 	if frame%30 != 0 {
 		return

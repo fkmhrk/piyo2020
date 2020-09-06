@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	appVersion = "0.0.1１"
+	appVersion = "0.0.12"
 )
 
 var (
