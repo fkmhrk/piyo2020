@@ -43,12 +43,22 @@ if (!WebAssembly.instantiateStreaming) {
 
 // boot
 (async () => {
-  const [playerImg, heartImg, numberImg, e1Img, e2Img] = await Promise.all([
+  const [
+    playerImg,
+    heartImg,
+    numberImg,
+    e1Img,
+    e2Img,
+    e11Img,
+    e12Img,
+  ] = await Promise.all([
     loadImage("./player.png"),
     loadImage("./heart.png"),
     loadImage("./number.png"),
     loadImage("./enemy1.png"),
     loadImage("./enemy2.png"),
+    loadImage("./enemy11.png"),
+    loadImage("./enemy12.png"),
   ]);
 
   const go = new Go();
@@ -69,6 +79,8 @@ if (!WebAssembly.instantiateStreaming) {
     setImage("number", numberImg, 18, 18);
     setImage("enemy1", e1Img, 24, 24);
     setImage("enemy2", e2Img, 24, 24);
+    setImage("enemy11", e11Img, 40, 40);
+    setImage("enemy12", e12Img, 40, 40);
 
     const button = document.querySelector("#start") as HTMLButtonElement;
     button.addEventListener("click", () => {

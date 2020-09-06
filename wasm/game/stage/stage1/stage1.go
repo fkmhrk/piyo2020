@@ -164,9 +164,9 @@ func stage1Boss(obj *game.GameObject, engine game.Engine, frame int) {
 	}
 	newEnemy.DeadFunc = deadBoss
 	newEnemy.Score = 10000
-	newEnemy.Size = 16
+	newEnemy.Size = 24
 	newEnemy.DrawFunc = draw.Static
-	newEnemy.ImageName = "enemy1"
+	newEnemy.ImageName = "enemy11"
 	newEnemy.ShotFunc = shot.Sequential
 	newEnemy.ShotFrame = 0
 	newEnemy.SeqShotFuncs = shotBoss
