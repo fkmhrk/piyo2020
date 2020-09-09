@@ -6,7 +6,38 @@ import (
 	"github.com/fkmhrk/go-wasm-stg/game"
 )
 
-func Sequential(obj *game.GameObject, engine game.Engine) {
+type moveAPI struct{}
+
+// New creates move API
+func New() game.Move {
+	return &moveAPI{}
+}
+
+func (m *moveAPI) Sequential() game.MoveFunc {
+	return sequential
+}
+
+func (m *moveAPI) Nop() game.SeqMoveFunc {
+	return nop
+}
+
+func (m *moveAPI) Line() game.MoveFunc {
+	return line
+}
+
+func (m *moveAPI) FrameCountUp() game.MoveFunc {
+	return frameCountUp
+}
+
+func (m *moveAPI) ItemDrop() game.MoveFunc {
+	return itemDrop
+}
+
+func (m *moveAPI) LineReflect() game.MoveFunc {
+	return lineReflect
+}
+
+func sequential(obj *game.GameObject, engine game.Engine) {
 	obj.Frame++
 	frame := obj.Frame
 	for i := 0; i < len(obj.SeqMoveFuncs); i++ {
@@ -21,11 +52,11 @@ func Sequential(obj *game.GameObject, engine game.Engine) {
 	obj.Frame = 0
 }
 
-func Nop(obj *game.GameObject, engine game.Engine, frame int) {
+func nop(obj *game.GameObject, engine game.Engine, frame int) {
 	// nop!
 }
 
-func Line(obj *game.GameObject, engine game.Engine) {
+func line(obj *game.GameObject, engine game.Engine) {
 	obj.X += obj.Vx
 	obj.Y += obj.Vy
 	if isOutOfScreen(obj) {
@@ -41,7 +72,7 @@ func LineWithFrame(obj *game.GameObject, engine game.Engine, frame int) {
 	}
 }
 
-func LineReflect(obj *game.GameObject, engine game.Engine) {
+func lineReflect(obj *game.GameObject, engine game.Engine) {
 	obj.X += obj.Vx
 	obj.Y += obj.Vy
 	if obj.X < 0 {
@@ -55,6 +86,17 @@ func LineReflect(obj *game.GameObject, engine game.Engine) {
 	if obj.Y < 0 {
 		obj.Vy = obj.Vy
 		obj.Y += obj.Vy
+	}
+	if isOutOfScreen(obj) {
+		obj.Alive = false
+	}
+}
+
+func itemDrop(obj *game.GameObject, engine game.Engine) {
+	obj.Y += obj.Vy
+	obj.Vy += 0.04
+	if obj.Vy > 4 {
+		obj.Vy = 4
 	}
 	if isOutOfScreen(obj) {
 		obj.Alive = false
@@ -79,7 +121,7 @@ func Cos(obj *game.GameObject, engine game.Engine, frame int) {
 	}
 }
 
-func FrameUp(obj *game.GameObject, engine game.Engine) {
+func frameCountUp(obj *game.GameObject, engine game.Engine) {
 	obj.Frame++
 	if obj.Frame > 30 {
 		obj.Alive = false
@@ -89,7 +131,7 @@ func FrameUp(obj *game.GameObject, engine game.Engine) {
 func StopAim(obj *game.GameObject, engine game.Engine) {
 	obj.Frame++
 	if obj.Frame < 60 {
-		Line(obj, engine)
+		line(obj, engine)
 		return
 	}
 	if obj.Frame < 90 {
@@ -100,7 +142,7 @@ func StopAim(obj *game.GameObject, engine game.Engine) {
 		rad := math.Atan2(p.Y-obj.Y, p.X-obj.X)
 		obj.Vx = math.Cos(rad) * 4
 		obj.Vy = math.Sin(rad) * 4
-		obj.MoveFunc = Line
+		obj.MoveFunc = line
 		return
 	}
 }
@@ -108,15 +150,15 @@ func StopAim(obj *game.GameObject, engine game.Engine) {
 func SlowAfter60(obj *game.GameObject, engine game.Engine) {
 	obj.Frame++
 	if obj.Frame < 60 {
-		Line(obj, engine)
+		line(obj, engine)
 		return
 	}
 	if obj.Frame == 60 {
 		obj.Vy /= 2
-		Line(obj, engine)
+		line(obj, engine)
 		return
 	}
-	Line(obj, engine)
+	line(obj, engine)
 }
 
 func isOutOfScreen(obj *game.GameObject) bool {

@@ -5,7 +5,6 @@ import (
 	"math/rand"
 
 	"github.com/fkmhrk/go-wasm-stg/game"
-	"github.com/fkmhrk/go-wasm-stg/game/dead"
 	"github.com/fkmhrk/go-wasm-stg/game/draw"
 	"github.com/fkmhrk/go-wasm-stg/game/move"
 	"github.com/fkmhrk/go-wasm-stg/game/shot"
@@ -13,21 +12,24 @@ import (
 
 var (
 	Seq game.SeqMoveFuncs = game.SeqMoveFuncs{
-		&game.SeqMove{Frame: 120, Func: move.Nop},
+		&game.SeqMove{Frame: 120, Func: nop},
 		&game.SeqMove{Frame: 1, Func: stageText},
-		&game.SeqMove{Frame: 120, Func: move.Nop},
+		&game.SeqMove{Frame: 120, Func: nop},
 		&game.SeqMove{Frame: 1, Func: boss},
-		&game.SeqMove{Frame: 9999, Func: move.Nop},
+		&game.SeqMove{Frame: 9999, Func: nop},
 	}
 )
 
+func nop(obj *game.GameObject, engine game.Engine, frame int) {
+}
+
 func stageText(obj *game.GameObject, engine game.Engine, frame int) {
 	newEnemy := game.NewObject(game.ObjTypeEnemy, 320, 120)
-	newEnemy.MoveFunc = move.Sequential
+	newEnemy.MoveFunc = engine.Move().Sequential()
 	newEnemy.SeqMoveFuncs = move.SeqStage
 	newEnemy.HP = 9999
 	newEnemy.Vx = -4
-	newEnemy.DeadFunc = dead.SoloExplode
+	newEnemy.DeadFunc = engine.Dead().SoloExplode()
 	newEnemy.Score = 0
 	newEnemy.Size = 16
 	newEnemy.DrawFunc = draw.StageText(3)
@@ -39,23 +41,23 @@ func stageText(obj *game.GameObject, engine game.Engine, frame int) {
 func boss(obj *game.GameObject, engine game.Engine, frame int) {
 	newEnemy := game.NewObject(game.ObjTypeEnemy, 160, 0)
 	newEnemy.HP = 100
-	newEnemy.MoveFunc = move.Sequential
+	newEnemy.MoveFunc = engine.Move().Sequential()
 	newEnemy.Vx = 0
 	newEnemy.Vy = 1
 	newEnemy.SeqMoveFuncs = moveBoss
 	newEnemy.DeadFunc = deadBoss
 	newEnemy.Score = 30000
 	newEnemy.Size = 16
-	newEnemy.DrawFunc = draw.Static
+	newEnemy.DrawFunc = engine.Draw().Static()
 	newEnemy.ImageName = "enemy2"
-	newEnemy.ShotFunc = shot.Sequential
+	newEnemy.ShotFunc = engine.Shot().Sequential()
 	newEnemy.ShotFrame = 0
 	newEnemy.SeqShotFuncs = shotBoss
 	engine.ShowBoss(newEnemy)
 }
 
 func deadBoss(engine game.Engine, obj *game.GameObject) {
-	dead.Explode(engine, obj)
+	engine.Dead().Explode()
 	engine.ShowBoss(nil)    // clear
 	engine.GoToNextStage(1) // todo make stage 3
 }
@@ -86,7 +88,7 @@ func randomAim(obj *game.GameObject, engine game.Engine, frame int) {
 		obj.Vy = (nextY - obj.Y) / 90
 	}
 	if frame < 90 {
-		move.Line(obj, engine)
+		engine.Move().Line()(obj, engine)
 	}
 }
 
@@ -107,8 +109,8 @@ func bossShot(obj *game.GameObject, engine game.Engine, frame int) {
 		shot := game.NewObject(game.ObjTypeEnemyShot, obj.X, obj.Y)
 		shot.Vx = math.Cos(radList[i]) * speed
 		shot.Vy = math.Sin(radList[i]) * speed
-		shot.MoveFunc = move.Line
-		shot.DrawFunc = draw.StrokeArc
+		shot.MoveFunc = engine.Move().Line()
+		shot.DrawFunc = draw.New().StrokeArc()
 		engine.AddEnemyShot(shot)
 	}
 }

@@ -51,6 +51,7 @@ if (!WebAssembly.instantiateStreaming) {
     e2Img,
     e11Img,
     e12Img,
+    item1Img,
   ] = await Promise.all([
     loadImage("./player.png"),
     loadImage("./heart.png"),
@@ -59,6 +60,7 @@ if (!WebAssembly.instantiateStreaming) {
     loadImage("./enemy2.png"),
     loadImage("./enemy11.png"),
     loadImage("./enemy12.png"),
+    loadImage("./item1.png"),
   ]);
 
   const go = new Go();
@@ -81,6 +83,7 @@ if (!WebAssembly.instantiateStreaming) {
     setImage("enemy2", e2Img, 24, 24);
     setImage("enemy11", e11Img, 40, 40);
     setImage("enemy12", e12Img, 40, 40);
+    setImage("item1", item1Img, 12, 12);
 
     const button = document.querySelector("#start") as HTMLButtonElement;
     button.addEventListener("click", () => {

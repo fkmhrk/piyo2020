@@ -4,11 +4,20 @@ import (
 	"math"
 
 	"github.com/fkmhrk/go-wasm-stg/game"
-	"github.com/fkmhrk/go-wasm-stg/game/draw"
-	"github.com/fkmhrk/go-wasm-stg/game/move"
 )
 
-func Sequential(obj *game.GameObject, engine game.Engine) {
+type shotAPI struct{}
+
+// New creates api instance
+func New() game.Shot {
+	return &shotAPI{}
+}
+
+func (s *shotAPI) Sequential() game.ShotFunc {
+	return sequential
+}
+
+func sequential(obj *game.GameObject, engine game.Engine) {
 	obj.ShotFrame++
 	frame := obj.ShotFrame
 	for i := 0; i < len(obj.SeqShotFuncs); i++ {
@@ -33,8 +42,8 @@ func Aim(obj *game.GameObject, engine game.Engine, frame int) {
 	shot := game.NewObject(game.ObjTypeEnemyShot, obj.X, obj.Y)
 	shot.Vx = math.Cos(rad) * 4
 	shot.Vy = math.Sin(rad) * 4
-	shot.MoveFunc = move.Line
-	shot.DrawFunc = draw.StrokeArc
+	shot.MoveFunc = engine.Move().Line()
+	shot.DrawFunc = engine.Draw().StrokeArc()
 	engine.AddEnemyShot(shot)
 }
 
@@ -49,8 +58,8 @@ func Aim5(obj *game.GameObject, engine game.Engine, frame int) {
 		shot := game.NewObject(game.ObjTypeEnemyShot, obj.X, obj.Y)
 		shot.Vx = math.Cos(rad) * speed
 		shot.Vy = math.Sin(rad) * speed
-		shot.MoveFunc = move.Line
-		shot.DrawFunc = draw.StrokeArc
+		shot.MoveFunc = engine.Move().Line()
+		shot.DrawFunc = engine.Draw().StrokeArc()
 		engine.AddEnemyShot(shot)
 	}
 }
@@ -67,8 +76,8 @@ func Fan3(obj *game.GameObject, engine game.Engine, frame int) {
 		shot := game.NewObject(game.ObjTypeEnemyShot, obj.X, obj.Y)
 		shot.Vx = math.Cos(rad) * speed
 		shot.Vy = math.Sin(rad) * speed
-		shot.MoveFunc = move.Line
-		shot.DrawFunc = draw.StrokeArc
+		shot.MoveFunc = engine.Move().Line()
+		shot.DrawFunc = engine.Draw().StrokeArc()
 		engine.AddEnemyShot(shot)
 		rad += math.Pi * 2 / 3
 	}
@@ -86,8 +95,8 @@ func Fan5(obj *game.GameObject, engine game.Engine, frame int) {
 		shot := game.NewObject(game.ObjTypeEnemyShot, obj.X, obj.Y)
 		shot.Vx = math.Cos(rad) * speed
 		shot.Vy = math.Sin(rad) * speed
-		shot.MoveFunc = move.LineReflect
-		shot.DrawFunc = draw.StrokeArc
+		shot.MoveFunc = engine.Move().LineReflect()
+		shot.DrawFunc = engine.Draw().StrokeArc()
 		engine.AddEnemyShot(shot)
 		rad += math.Pi * 2 / 5
 	}
@@ -104,8 +113,8 @@ func Circle32(obj *game.GameObject, engine game.Engine, frame int) {
 		shot := game.NewObject(game.ObjTypeEnemyShot, obj.X, obj.Y)
 		shot.Vx = math.Cos(rad) * speed
 		shot.Vy = math.Sin(rad) * speed
-		shot.MoveFunc = move.Line
-		shot.DrawFunc = draw.StrokeArc
+		shot.MoveFunc = engine.Move().Line()
+		shot.DrawFunc = engine.Draw().StrokeArc()
 		engine.AddEnemyShot(shot)
 		rad += math.Pi * 2 / 32
 	}
@@ -124,8 +133,8 @@ func Way3(obj *game.GameObject, engine game.Engine, frame int) {
 		shot := game.NewObject(game.ObjTypeEnemyShot, obj.X, obj.Y)
 		shot.Vx = math.Cos(radList[i]) * speed
 		shot.Vy = math.Sin(radList[i]) * speed
-		shot.MoveFunc = move.Line
-		shot.DrawFunc = draw.StrokeArc
+		shot.MoveFunc = engine.Move().Line()
+		shot.DrawFunc = engine.Draw().StrokeArc()
 		engine.AddEnemyShot(shot)
 	}
 }

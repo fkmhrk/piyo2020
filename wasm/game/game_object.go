@@ -10,7 +10,8 @@ const (
 	ObjTypePlayerShot = 2
 	ObjTypeEnemy      = 3
 	ObjTypeEnemyShot  = 4
-	ObjTypeStage      = 5
+	ObjTypeItem       = 5
+	ObjTypeStage      = 6
 )
 
 // JsImage is an image for JavaScript

@@ -7,6 +7,7 @@ import (
 	"github.com/fkmhrk/go-wasm-stg/game/dead"
 	"github.com/fkmhrk/go-wasm-stg/game/draw"
 	"github.com/fkmhrk/go-wasm-stg/game/move"
+	"github.com/fkmhrk/go-wasm-stg/game/shot"
 	"github.com/fkmhrk/go-wasm-stg/game/stage/stage1"
 	"github.com/fkmhrk/go-wasm-stg/game/stage/stage2"
 )
@@ -34,17 +35,24 @@ type engine struct {
 	displayScore  int
 	boss          *game.GameObject
 	bossMaxHP     int
+	shot          game.Shot
+	move          game.Move
+	draw          game.Draw
+	dead          game.Dead
 }
 
 // New creates engine instance
 func New() game.Engine {
+	deadAPI := dead.New()
 	player := game.NewObject(game.ObjTypePlayer, 160, 440)
-	player.DeadFunc = dead.Explode
+	player.DeadFunc = deadAPI.Explode()
 	player.Size = 4
 	player.DrawFunc = draw.Player
 	player.ImageName = "player"
+
+	moveAPI := move.New()
 	stg := game.NewObject(game.ObjTypeStage, 0, 0)
-	stg.MoveFunc = move.Sequential
+	stg.MoveFunc = moveAPI.Sequential()
 
 	e := &engine{
 		images:        make(map[string]*game.JsImage),
@@ -60,6 +68,10 @@ func New() game.Engine {
 		score:         0,
 		displayScore:  0,
 		boss:          nil,
+		shot:          shot.New(),
+		move:          moveAPI,
+		draw:          draw.New(),
+		dead:          deadAPI,
 	}
 	e.Restart()
 	return e
@@ -144,7 +156,7 @@ func (e *engine) Restart() {
 	e.enemyShots = e.enemyShots[:0]
 	e.hiddenEnemies = e.hiddenEnemies[:0]
 	e.effects = e.effects[:0]
-	e.stage.MoveFunc = move.Sequential
+	e.stage.MoveFunc = e.move.Sequential()
 	e.stage.SeqMoveFuncs = stage1.Seq
 	e.stage.Frame = 0
 	e.gameState = gameStateMain
@@ -153,6 +165,22 @@ func (e *engine) Restart() {
 	e.stageCount = 1
 	e.displayScore = 0
 	e.boss = nil
+}
+
+func (e *engine) Shot() game.Shot {
+	return e.shot
+}
+
+func (e *engine) Move() game.Move {
+	return e.move
+}
+
+func (e *engine) Draw() game.Draw {
+	return e.draw
+}
+
+func (e *engine) Dead() game.Dead {
+	return e.dead
 }
 
 func (e *engine) DoFrame(key int16, touchDX, touchDY int, ctx js.Value) {
@@ -225,7 +253,7 @@ func movePlayer(player *game.GameObject, key int16, touchDX, touchDY int, engine
 		if player.ShotFrame == 0 {
 			player.ShotFrame = 5
 			shot := game.NewObject(game.ObjTypePlayerShot, player.X, player.Y)
-			shot.MoveFunc = move.Line
+			shot.MoveFunc = engine.Move().Line()
 			shot.Vx = 0
 			shot.Vy = -6
 			shot.Size = 2
@@ -267,6 +295,11 @@ func hitCheckPlayerToEnemies(player *game.GameObject, enemies []*game.GameObject
 	}
 	for _, e := range enemies {
 		if game.IsHit(player, e) {
+			if e.ObjType == game.ObjTypeItem {
+				e.Alive = false
+				engine.AddScore(100)
+				return
+			}
 			player.Alive = false
 			player.Frame = 60
 

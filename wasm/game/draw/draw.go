@@ -8,18 +8,48 @@ import (
 	"github.com/fkmhrk/go-wasm-stg/game"
 )
 
-func Static(ctx js.Value, obj *game.GameObject, images map[string]*game.JsImage) {
+type drawAPI struct{}
+
+func New() game.Draw {
+	return &drawAPI{}
+}
+
+func (d *drawAPI) Static() game.DrawFunc {
+	return static
+}
+
+func (d *drawAPI) StrokeArc() game.DrawFunc {
+	return strokeArc
+}
+
+func (d *drawAPI) ExpandingStrokeArc() game.DrawFunc {
+	return expandingStrokeArc
+}
+
+func (d *drawAPI) FillArc() game.DrawFunc {
+	return FillArc
+}
+
+func (d *drawAPI) StageText(stage int) game.DrawFunc {
+	return StageText(stage)
+}
+
+func (d *drawAPI) Player() game.DrawFunc {
+	return Player
+}
+
+func static(ctx js.Value, obj *game.GameObject, images map[string]*game.JsImage) {
 	image := images[obj.ImageName]
 	ctx.Call("drawImage", image.Value, obj.X-image.Width, obj.Y-image.Height)
 }
 
-func StrokeArc(ctx js.Value, obj *game.GameObject, images map[string]*game.JsImage) {
+func strokeArc(ctx js.Value, obj *game.GameObject, images map[string]*game.JsImage) {
 	ctx.Call("beginPath")
 	ctx.Call("arc", obj.X, obj.Y, 4, 0, math.Pi*2, true)
 	ctx.Call("stroke")
 }
 
-func ExpandingStrokeArc(ctx js.Value, obj *game.GameObject, images map[string]*game.JsImage) {
+func expandingStrokeArc(ctx js.Value, obj *game.GameObject, images map[string]*game.JsImage) {
 	ctx.Call("beginPath")
 	ctx.Call("arc", obj.X, obj.Y, obj.Frame, 0, math.Pi*2, true)
 	ctx.Call("stroke")

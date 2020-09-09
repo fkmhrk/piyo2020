@@ -20,4 +20,9 @@ type Engine interface {
 	ToGameOver()
 	Restart()
 	DoFrame(key int16, touchDX, touchDY int, ctx js.Value)
+
+	Shot() Shot
+	Move() Move
+	Draw() Draw
+	Dead() Dead
 }
