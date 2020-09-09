@@ -3,6 +3,11 @@
   <head>
     <meta charset="utf8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      .result_table tbody td {
+        text-align: right;
+      }
+    </style>
   </head>
   <body>
     <div style="width: 320px; margin: 0 auto">
@@ -26,8 +31,18 @@
             align-items: center;
           "
         >
-          <div>
-            <p>GAME OVER</p>
+          <div style="background-color: white; padding: 8px">
+            <p style="text-align: center">GAME OVER</p>
+            <table class="result_table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Score</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="score_list"></tbody>
+            </table>
             <div style="text-align: center">
               <button id="tweet-button">Tweet</button>
             </div>

@@ -1,7 +1,9 @@
 package engine
 
 import (
+	"encoding/json"
 	"syscall/js"
+	"time"
 
 	"github.com/fkmhrk/go-wasm-stg/game"
 	"github.com/fkmhrk/go-wasm-stg/game/dead"
@@ -10,11 +12,14 @@ import (
 	"github.com/fkmhrk/go-wasm-stg/game/shot"
 	"github.com/fkmhrk/go-wasm-stg/game/stage/stage1"
 	"github.com/fkmhrk/go-wasm-stg/game/stage/stage2"
+	"github.com/fkmhrk/go-wasm-stg/game/storage"
 )
 
 const (
 	gameStateMain     gameState = 1
 	gameStateGameOver gameState = 2
+
+	storageKey = "result"
 )
 
 type gameState int
@@ -39,6 +44,8 @@ type engine struct {
 	move          game.Move
 	draw          game.Draw
 	dead          game.Dead
+	storage       game.Storage
+	result        *game.Result
 }
 
 // New creates engine instance
@@ -53,6 +60,14 @@ func New() game.Engine {
 	moveAPI := move.New()
 	stg := game.NewObject(game.ObjTypeStage, 0, 0)
 	stg.MoveFunc = moveAPI.Sequential()
+
+	storage := storage.NewBasicStorage()
+	result := game.NewResult()
+	// restore
+	data, err := storage.Load(storageKey)
+	if err == nil {
+		result.LoadFromMap(data)
+	}
 
 	e := &engine{
 		images:        make(map[string]*game.JsImage),
@@ -72,6 +87,8 @@ func New() game.Engine {
 		move:          moveAPI,
 		draw:          draw.New(),
 		dead:          deadAPI,
+		storage:       storage,
+		result:        result,
 	}
 	e.Restart()
 	return e
@@ -128,8 +145,17 @@ func (e *engine) Player() *game.GameObject {
 	return e.player
 }
 
+func (e *engine) Score() int {
+	return e.score
+}
+
 func (e *engine) AddScore(value int) {
 	e.score += value
+}
+
+func (e *engine) SaveResult() {
+	m := e.result.ToMap()
+	e.storage.Save(storageKey, m)
 }
 
 func (e *engine) Miss() bool {
@@ -143,7 +169,11 @@ func (e *engine) ToGameOver() {
 	block := document.Call("getElementById", "gameover-block")
 	block.Get("style").Set("display", "flex")
 
-	js.Global().Call("setShareText", e.stageCount, e.score)
+	resultData, err := json.Marshal(e.result.ToMap())
+	if err != nil {
+		return
+	}
+	js.Global().Call("showResult", e.stageCount, e.score, string(resultData))
 }
 
 func (e *engine) Restart() {
@@ -165,6 +195,10 @@ func (e *engine) Restart() {
 	e.stageCount = 1
 	e.displayScore = 0
 	e.boss = nil
+}
+
+func (e *engine) Result() *game.Result {
+	return e.result
 }
 
 func (e *engine) Shot() game.Shot {
@@ -297,7 +331,7 @@ func hitCheckPlayerToEnemies(player *game.GameObject, enemies []*game.GameObject
 		if game.IsHit(player, e) {
 			if e.ObjType == game.ObjTypeItem {
 				e.Alive = false
-				engine.AddScore(100)
+				engine.AddScore(200)
 				return
 			}
 			player.Alive = false
@@ -348,6 +382,9 @@ func checkPlayerIsDead(player *game.GameObject, engine game.Engine) {
 			player.X = 160
 			player.Y = 440
 		} else {
+			t := time.Now()
+			engine.Result().AddScore(engine.Score(), t.Unix())
+			engine.SaveResult()
 			engine.ToGameOver()
 		}
 	}

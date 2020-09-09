@@ -93,6 +93,7 @@ func lineReflect(obj *game.GameObject, engine game.Engine) {
 }
 
 func itemDrop(obj *game.GameObject, engine game.Engine) {
+	obj.X += obj.Vx
 	obj.Y += obj.Vy
 	obj.Vy += 0.04
 	if obj.Vy > 4 {

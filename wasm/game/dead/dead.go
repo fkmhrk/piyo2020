@@ -21,6 +21,10 @@ func (d *deadAPI) SoloExplodeWithItem(itemID int) game.DeadFunc {
 	return soloExplodeWithItem(itemID)
 }
 
+func (d *deadAPI) SoloExplodeWithItem3(itemID int) game.DeadFunc {
+	return soloExplodeWithItem3(itemID)
+}
+
 func (d *deadAPI) Explode() game.DeadFunc {
 	return explode
 }
@@ -41,6 +45,43 @@ func soloExplodeWithItem(itemId int) func(engine game.Engine, obj *game.GameObje
 		e := game.NewObject(game.ObjTypeItem, obj.X, obj.Y)
 		e.MoveFunc = engine.Move().ItemDrop()
 		e.Size = 18
+		e.Vy = -2
+		e.DrawFunc = engine.Draw().Static()
+		e.ImageName = imageName
+		e.Frame = 0
+		engine.AddEnemyShot(e)
+	}
+}
+
+func soloExplodeWithItem3(itemID int) func(engine game.Engine, obj *game.GameObject) {
+	imageName := fmt.Sprintf("item%d", itemID)
+	return func(engine game.Engine, obj *game.GameObject) {
+		soloExplode(engine, obj)
+
+		e := game.NewObject(game.ObjTypeItem, obj.X, obj.Y)
+		e.MoveFunc = engine.Move().ItemDrop()
+		e.Size = 18
+		e.Vx = 0
+		e.Vy = -2
+		e.DrawFunc = engine.Draw().Static()
+		e.ImageName = imageName
+		e.Frame = 0
+		engine.AddEnemyShot(e)
+
+		e = game.NewObject(game.ObjTypeItem, obj.X, obj.Y)
+		e.MoveFunc = engine.Move().ItemDrop()
+		e.Size = 18
+		e.Vx = -1
+		e.Vy = -2
+		e.DrawFunc = engine.Draw().Static()
+		e.ImageName = imageName
+		e.Frame = 0
+		engine.AddEnemyShot(e)
+
+		e = game.NewObject(game.ObjTypeItem, obj.X, obj.Y)
+		e.MoveFunc = engine.Move().ItemDrop()
+		e.Size = 18
+		e.Vx = 2
 		e.Vy = -2
 		e.DrawFunc = engine.Draw().Static()
 		e.ImageName = imageName

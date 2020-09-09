@@ -11,6 +11,7 @@ import (
 )
 
 var (
+	// Seq is stage 2 pattern
 	Seq game.SeqMoveFuncs = game.SeqMoveFuncs{
 		&game.SeqMove{Frame: 180, Func: nop},
 		&game.SeqMove{Frame: 1, Func: stageText},
@@ -63,18 +64,7 @@ func stageText(obj *game.GameObject, engine game.Engine, frame int) {
 }
 
 func step1_1(obj *game.GameObject, engine game.Engine, frame int) {
-	newEnemy := game.NewObject(game.ObjTypeEnemy, 240, 0)
-	newEnemy.MoveFunc = move.SlowAfter60
-	newEnemy.HP = 12
-	newEnemy.Vy = 2
-	newEnemy.DeadFunc = engine.Dead().SoloExplode()
-	newEnemy.Score = 500
-	newEnemy.Size = 8
-	newEnemy.DrawFunc = engine.Draw().Static()
-	newEnemy.ImageName = "enemy2"
-	newEnemy.ShotFunc = engine.Shot().Sequential()
-	newEnemy.ShotFrame = 0
-	newEnemy.SeqShotFuncs = shot.Seq3Fan
+	newEnemy := makeEnemy2(engine, 240, 0, true)
 	engine.AddEnemy(newEnemy)
 }
 
@@ -82,35 +72,16 @@ func step1_2(obj *game.GameObject, engine game.Engine, frame int) {
 	if frame%15 != 0 {
 		return
 	}
-	for i := 0; i < 2; i++ {
-		newEnemy := game.NewObject(game.ObjTypeEnemy, float64(16+i*24), 0)
-		newEnemy.MoveFunc = move.StopAim
-		newEnemy.Vy = 3
-		newEnemy.DeadFunc = engine.Dead().SoloExplode()
-		newEnemy.Score = 150
-		newEnemy.Size = 8
-		newEnemy.DrawFunc = engine.Draw().Static()
-		newEnemy.ImageName = "enemy1"
-		newEnemy.ShotFunc = engine.Shot().Sequential()
-		newEnemy.ShotFrame = 0
-		newEnemy.SeqShotFuncs = shot.SeqWaitAim
-		engine.AddEnemy(newEnemy)
-	}
+	hasItem := (frame/15)%2 == 0
+	newEnemy := makeEnemy1(engine, 16, 0, hasItem)
+	engine.AddEnemy(newEnemy)
+
+	newEnemy = makeEnemy1(engine, 40, 0, hasItem)
+	engine.AddEnemy(newEnemy)
 }
 
 func step2_1(obj *game.GameObject, engine game.Engine, frame int) {
-	newEnemy := game.NewObject(game.ObjTypeEnemy, 80, 0)
-	newEnemy.MoveFunc = move.SlowAfter60
-	newEnemy.HP = 12
-	newEnemy.Vy = 2
-	newEnemy.DeadFunc = engine.Dead().SoloExplode()
-	newEnemy.Score = 500
-	newEnemy.Size = 8
-	newEnemy.DrawFunc = engine.Draw().Static()
-	newEnemy.ImageName = "enemy2"
-	newEnemy.ShotFunc = engine.Shot().Sequential()
-	newEnemy.ShotFrame = 0
-	newEnemy.SeqShotFuncs = shot.Seq3Fan
+	newEnemy := makeEnemy2(engine, 80, 0, true)
 	engine.AddEnemy(newEnemy)
 }
 
@@ -118,34 +89,15 @@ func step2_2(obj *game.GameObject, engine game.Engine, frame int) {
 	if frame%15 != 0 {
 		return
 	}
-	for i := 0; i < 2; i++ {
-		newEnemy := game.NewObject(game.ObjTypeEnemy, float64(300-i*24), 0)
-		newEnemy.MoveFunc = move.StopAim
-		newEnemy.Vy = 3
-		newEnemy.DeadFunc = engine.Dead().SoloExplode()
-		newEnemy.Score = 150
-		newEnemy.Size = 8
-		newEnemy.DrawFunc = engine.Draw().Static()
-		newEnemy.ImageName = "enemy1"
-		newEnemy.ShotFunc = engine.Shot().Sequential()
-		newEnemy.ShotFrame = 0
-		newEnemy.SeqShotFuncs = shot.SeqWaitAim
-		engine.AddEnemy(newEnemy)
-	}
+	hasItem := (frame/15)%2 == 0
+	newEnemy := makeEnemy1(engine, 300, 0, hasItem)
+	engine.AddEnemy(newEnemy)
+
+	newEnemy = makeEnemy1(engine, 276, 0, hasItem)
+	engine.AddEnemy(newEnemy)
 }
 func step3_1(obj *game.GameObject, engine game.Engine, frame int) {
-	newEnemy := game.NewObject(game.ObjTypeEnemy, 160, 0)
-	newEnemy.MoveFunc = move.SlowAfter60
-	newEnemy.HP = 12
-	newEnemy.Vy = 2
-	newEnemy.DeadFunc = engine.Dead().SoloExplode()
-	newEnemy.Score = 500
-	newEnemy.Size = 8
-	newEnemy.DrawFunc = engine.Draw().Static()
-	newEnemy.ImageName = "enemy2"
-	newEnemy.ShotFunc = engine.Shot().Sequential()
-	newEnemy.ShotFrame = 0
-	newEnemy.SeqShotFuncs = shot.Seq3Fan
+	newEnemy := makeEnemy2(engine, 160, 0, true)
 	engine.AddEnemy(newEnemy)
 }
 
@@ -153,21 +105,12 @@ func step3_2(obj *game.GameObject, engine game.Engine, frame int) {
 	if frame%15 != 0 {
 		return
 	}
-	xPos := []float64{16, 304}
-	for i := 0; i < 2; i++ {
-		newEnemy := game.NewObject(game.ObjTypeEnemy, xPos[i], 0)
-		newEnemy.MoveFunc = move.StopAim
-		newEnemy.Vy = 3
-		newEnemy.DeadFunc = engine.Dead().SoloExplode()
-		newEnemy.Score = 150
-		newEnemy.Size = 8
-		newEnemy.DrawFunc = engine.Draw().Static()
-		newEnemy.ImageName = "enemy1"
-		newEnemy.ShotFunc = engine.Shot().Sequential()
-		newEnemy.ShotFrame = 0
-		newEnemy.SeqShotFuncs = shot.SeqWaitAim
-		engine.AddEnemy(newEnemy)
-	}
+	hasItem := (frame/15)%2 == 0
+	newEnemy := makeEnemy1(engine, 16, 0, hasItem)
+	engine.AddEnemy(newEnemy)
+
+	newEnemy = makeEnemy1(engine, 304, 0, hasItem)
+	engine.AddEnemy(newEnemy)
 }
 
 func step4(obj *game.GameObject, engine game.Engine, frame int) {
@@ -177,14 +120,10 @@ func step4(obj *game.GameObject, engine game.Engine, frame int) {
 	x := rand.Float64() * 320
 	vy := rand.Float64()*3 + 1
 
-	newEnemy := game.NewObject(game.ObjTypeEnemy, x, 0)
+	newEnemy := makeEnemy1(engine, x, 0, true)
 	newEnemy.MoveFunc = engine.Move().Line()
 	newEnemy.Vy = vy
-	newEnemy.DeadFunc = engine.Dead().SoloExplode()
 	newEnemy.Score = 150
-	newEnemy.Size = 8
-	newEnemy.DrawFunc = engine.Draw().Static()
-	newEnemy.ImageName = "enemy1"
 	newEnemy.ShotFunc = engine.Shot().Sequential()
 	newEnemy.ShotFrame = 0
 	newEnemy.SeqShotFuncs = shot.Seq3Way
@@ -200,7 +139,7 @@ func boss(obj *game.GameObject, engine game.Engine, frame int) {
 	newEnemy.Vy = 1
 	newEnemy.SeqMoveFuncs = moveBoss
 	newEnemy.DeadFunc = deadBoss
-	newEnemy.Score = 30000
+	newEnemy.Score = 50000
 	newEnemy.Size = 24
 	newEnemy.DrawFunc = engine.Draw().Static()
 	newEnemy.ImageName = "enemy12"
@@ -267,4 +206,45 @@ func bossShot(obj *game.GameObject, engine game.Engine, frame int) {
 		shot.DrawFunc = engine.Draw().StrokeArc()
 		engine.AddEnemyShot(shot)
 	}
+}
+
+// private functions
+
+func makeEnemy1(engine game.Engine, x, y float64, hasItem bool) *game.GameObject {
+	enemy := game.NewObject(game.ObjTypeEnemy, x, y)
+	enemy.MoveFunc = move.StopAim
+	enemy.Vy = 3
+	if hasItem {
+		enemy.DeadFunc = engine.Dead().SoloExplodeWithItem(1)
+	} else {
+		enemy.DeadFunc = engine.Dead().SoloExplode()
+	}
+	enemy.Score = 500
+	enemy.Size = 8
+	enemy.DrawFunc = engine.Draw().Static()
+	enemy.ImageName = "enemy1"
+	enemy.ShotFunc = engine.Shot().Sequential()
+	enemy.ShotFrame = 0
+	enemy.SeqShotFuncs = shot.SeqWaitAim
+	return enemy
+}
+
+func makeEnemy2(engine game.Engine, x, y float64, hasItem bool) *game.GameObject {
+	enemy := game.NewObject(game.ObjTypeEnemy, x, 0)
+	enemy.MoveFunc = move.SlowAfter60
+	enemy.HP = 12
+	enemy.Vy = 2
+	if hasItem {
+		enemy.DeadFunc = engine.Dead().SoloExplodeWithItem3(1)
+	} else {
+		enemy.DeadFunc = engine.Dead().SoloExplode()
+	}
+	enemy.Score = 7500
+	enemy.Size = 8
+	enemy.DrawFunc = engine.Draw().Static()
+	enemy.ImageName = "enemy2"
+	enemy.ShotFunc = engine.Shot().Sequential()
+	enemy.ShotFrame = 0
+	enemy.SeqShotFuncs = shot.Seq3Fan
+	return enemy
 }

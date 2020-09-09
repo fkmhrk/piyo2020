@@ -14,6 +14,11 @@ declare function setImage(
 declare function start(): void;
 declare function restart(): void;
 
+interface IResultScore {
+  score: number;
+  date: number;
+}
+
 const loadImage = (src: string) =>
   new Promise((resolve: (img: HTMLImageElement) => void, reject) => {
     const img = new Image();
@@ -23,7 +28,48 @@ const loadImage = (src: string) =>
     };
   });
 
-(<any>window).setShareText = (stage: number, score: number) => {
+const toDateStr = (timestamp: number) => {
+  const date = new Date(timestamp * 1000);
+  const addZero = (v: number) => {
+    if (v < 10) {
+      return `0${v}`;
+    } else {
+      return `${v}`;
+    }
+  };
+  return `${date.getFullYear()}/${addZero(date.getMonth() + 1)}/${addZero(
+    date.getDate()
+  )}`;
+};
+const showTopScores = (scores: IResultScore[]) => {
+  const tbody = document.querySelector("#score_list")!;
+  tbody.innerHTML = "";
+  for (let i = 0; i < 5 && i < scores.length; i++) {
+    const s = scores[i];
+    const tr = document.createElement("tr");
+    const rankTh = document.createElement("th");
+    rankTh.innerText = `${i + 1}`;
+    tr.appendChild(rankTh);
+
+    const scoreTd = document.createElement("td");
+    scoreTd.innerText = `${s.score}`;
+    tr.appendChild(scoreTd);
+
+    const dateTd = document.createElement("td");
+    dateTd.innerText = toDateStr(s.date);
+    tr.appendChild(dateTd);
+
+    tbody.appendChild(tr);
+  }
+};
+
+(<any>window).showResult = (
+  stage: number,
+  score: number,
+  resultStr: string
+) => {
+  const result = JSON.parse(resultStr);
+  showTopScores(result.scores);
   const button = document.querySelector("#tweet-button") as HTMLButtonElement;
   button.onclick = () => {
     window.location.href = `https://twitter.com/intent/tweet?text=I reached Stage ${stage} and got ${score} Points!&url=https:%2f%2ffkmhrk.github.io%2fgo-wasm-stg%2f`;

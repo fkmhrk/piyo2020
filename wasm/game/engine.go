@@ -15,12 +15,16 @@ type Engine interface {
 	GoToNextStage(stage int)
 	Player() *GameObject
 
+	Score() int
 	AddScore(value int)
+	SaveResult()
+
 	Miss() bool
 	ToGameOver()
 	Restart()
 	DoFrame(key int16, touchDX, touchDY int, ctx js.Value)
 
+	Result() *Result
 	Shot() Shot
 	Move() Move
 	Draw() Draw
