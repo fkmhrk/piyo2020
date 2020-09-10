@@ -12,6 +12,10 @@
   <body>
     <div style="width: 320px; margin: 0 auto">
       <h1>Piyo &amp; Fruits</h1>
+      <div>
+        <p id="version">Version</p>
+      </div>
+
       <div style="text-align: center">
         <button id="start">Start</button>
       </div>
@@ -61,7 +65,23 @@
         </p>
       </div>
       <div>
-        <p id="version">Version</p>
+        <h2>Your results</h2>
+        <table>
+          <tbody>
+            <tr>
+              <th>Play count</th>
+              <td id="playCount"></td>
+            </tr>
+            <tr>
+              <th>Death count</th>
+              <td id="deathCount"></td>
+            </tr>
+            <tr>
+              <th>Days</th>
+              <td id="days"></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
     <script src="./wasm_exec.js"></script>

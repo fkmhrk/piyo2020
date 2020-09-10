@@ -2,11 +2,16 @@ package game
 
 import (
 	"sort"
+	"time"
 )
 
 // Result describes results
 type Result struct {
-	TopScores []resultScore
+	StartCount int
+	DeathCount int
+	Days       int
+	LastDate   int
+	TopScores  []resultScore
 }
 
 type resultScore struct {
@@ -35,13 +40,32 @@ func (r *Result) AddScore(score int, date int64) {
 	}
 }
 
+func (r *Result) MarkPlay() {
+	today := toYYYYMMDD(time.Now())
+	yesterday := toYYYYMMDD(time.Now().AddDate(0, 0, -1))
+	if r.LastDate == today {
+		return
+	}
+	if r.LastDate == yesterday {
+		r.LastDate = today
+		r.Days++
+	} else {
+		r.LastDate = today
+		r.Days = 1
+	}
+}
+
 func (r *Result) ToMap() map[string]interface{} {
 	scores := make([]map[string]interface{}, 0)
 	for _, s := range r.TopScores {
 		scores = append(scores, s.toMap())
 	}
 	return map[string]interface{}{
-		"scores": scores,
+		"start_count": r.StartCount,
+		"death_count": r.DeathCount,
+		"days":        r.Days,
+		"last_date":   r.LastDate,
+		"scores":      scores,
 	}
 }
 
@@ -53,6 +77,10 @@ func (s *resultScore) toMap() map[string]interface{} {
 }
 
 func (r *Result) LoadFromMap(data map[string]interface{}) {
+	startCount, _ := data["start_count"].(float64)
+	deathCount, _ := data["death_count"].(float64)
+	days, _ := data["days"].(float64)
+	lastDate, _ := data["last_date"].(float64)
 	scoreMaps, ok := data["scores"].([]interface{})
 	if !ok {
 		return
@@ -67,6 +95,10 @@ func (r *Result) LoadFromMap(data map[string]interface{}) {
 		score.LoadFromMap(sMap)
 		scores = append(scores, score)
 	}
+	r.StartCount = int(startCount)
+	r.DeathCount = int(deathCount)
+	r.Days = int(days)
+	r.LastDate = int(lastDate)
 	r.TopScores = scores
 }
 
@@ -81,4 +113,8 @@ func (s *resultScore) LoadFromMap(data map[string]interface{}) {
 	}
 	s.Score = int(score)
 	s.Date = int64(date)
+}
+
+func toYYYYMMDD(t time.Time) int {
+	return t.Year()*100000 + int(t.Month())*100 + t.Day()
 }

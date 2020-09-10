@@ -158,8 +158,25 @@ func (e *engine) SaveResult() {
 	e.storage.Save(storageKey, m)
 }
 
+func (e *engine) updateResult() {
+	resultData, err := json.Marshal(e.result.ToMap())
+	if err != nil {
+		return
+	}
+	js.Global().Call("updateResult", string(resultData))
+}
+
+func (e *engine) AddPlayCount() {
+	e.result.StartCount++
+	e.SaveResult()
+	e.updateResult()
+}
+
 func (e *engine) Miss() bool {
 	e.life--
+	e.result.DeathCount++
+	e.SaveResult()
+	e.updateResult()
 	return e.life >= 0
 }
 
@@ -382,8 +399,8 @@ func checkPlayerIsDead(player *game.GameObject, engine game.Engine) {
 			player.X = 160
 			player.Y = 440
 		} else {
-			t := time.Now()
-			engine.Result().AddScore(engine.Score(), t.Unix())
+			engine.Result().MarkPlay()
+			engine.Result().AddScore(engine.Score(), time.Now().Unix())
 			engine.SaveResult()
 			engine.ToGameOver()
 		}

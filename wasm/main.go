@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	appVersion = "0.0.13"
+	appVersion = "0.0.14"
 )
 
 var (
@@ -37,12 +37,14 @@ func main() {
 	initListeners(document, canvas, engine)
 
 	startFunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		engine.AddPlayCount()
 		start(engine, ctx)
 		return nil
 	})
 	js.Global().Set("start", startFunc)
 
 	restartFunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		engine.AddPlayCount()
 		engine.Restart()
 		return nil
 	})

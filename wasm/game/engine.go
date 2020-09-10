@@ -18,6 +18,7 @@ type Engine interface {
 	Score() int
 	AddScore(value int)
 	SaveResult()
+	AddPlayCount()
 
 	Miss() bool
 	ToGameOver()

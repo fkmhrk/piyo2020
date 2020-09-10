@@ -76,6 +76,13 @@ const showTopScores = (scores: IResultScore[]) => {
   };
 };
 
+(<any>window).updateResult = (resultStr: string) => {
+  const result = JSON.parse(resultStr);
+  document.querySelector("#playCount")!!.innerHTML = `${result.start_count}`;
+  document.querySelector("#deathCount")!!.innerHTML = `${result.death_count}`;
+  document.querySelector("#days")!!.innerHTML = `${result.days}`;
+};
+
 if (!WebAssembly.instantiateStreaming) {
   // polyfill
   (<any>WebAssembly.instantiateStreaming) = async (
