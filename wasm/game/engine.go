@@ -11,20 +11,25 @@ type Engine interface {
 	AddEnemy(enemy *GameObject)
 	AddEnemyShot(shot *GameObject)
 	AddEffect(effect *GameObject)
-	ShowBoss(boss *GameObject)
-	GoToNextStage(stage int)
 	Player() *GameObject
 
+	// Result
 	Score() int
 	AddScore(value int)
 	SaveResult()
 	AddPlayCount()
 
+	// Game event
 	Miss() bool
 	ToGameOver()
+	ShowBoss(boss *GameObject)
+	GoToNextStage(stage int)
+
+	// Called from UI
 	Restart()
 	DoFrame(key int16, touchDX, touchDY int, ctx js.Value)
 
+	// Functions
 	Result() *Result
 	Shot() Shot
 	Move() Move

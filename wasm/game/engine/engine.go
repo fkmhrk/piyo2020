@@ -8,10 +8,12 @@ import (
 	"github.com/fkmhrk/go-wasm-stg/game"
 	"github.com/fkmhrk/go-wasm-stg/game/dead"
 	"github.com/fkmhrk/go-wasm-stg/game/draw"
+	"github.com/fkmhrk/go-wasm-stg/game/image"
 	"github.com/fkmhrk/go-wasm-stg/game/move"
 	"github.com/fkmhrk/go-wasm-stg/game/shot"
 	"github.com/fkmhrk/go-wasm-stg/game/stage/stage1"
 	"github.com/fkmhrk/go-wasm-stg/game/stage/stage2"
+	"github.com/fkmhrk/go-wasm-stg/game/stage/stage3"
 	"github.com/fkmhrk/go-wasm-stg/game/storage"
 )
 
@@ -20,6 +22,13 @@ const (
 	gameStateGameOver gameState = 2
 
 	storageKey = "result"
+
+	windowWidth  = 320
+	windowHeight = 480
+)
+
+var (
+	extendScores = []int{30000, 100000, 99999999}
 )
 
 type gameState int
@@ -37,6 +46,7 @@ type engine struct {
 	life          int
 	stageCount    int
 	score         int
+	extendScore   int
 	displayScore  int
 	boss          *game.GameObject
 	bossMaxHP     int
@@ -55,7 +65,7 @@ func New() game.Engine {
 	player.DeadFunc = deadAPI.Explode()
 	player.Size = 4
 	player.DrawFunc = draw.Player
-	player.ImageName = "player"
+	player.ImageName = image.Player
 
 	moveAPI := move.New()
 	stg := game.NewObject(game.ObjTypeStage, 0, 0)
@@ -78,11 +88,7 @@ func New() game.Engine {
 		effects:       make([]*game.GameObject, 0, 100),
 		stage:         stg,
 		gameState:     gameStateMain,
-		life:          2,
 		stageCount:    1,
-		score:         0,
-		displayScore:  0,
-		boss:          nil,
 		shot:          shot.New(),
 		move:          moveAPI,
 		draw:          draw.New(),
@@ -138,6 +144,8 @@ func (e *engine) GoToNextStage(stage int) {
 		e.stage.SeqMoveFuncs = stage1.Seq
 	case 2:
 		e.stage.SeqMoveFuncs = stage2.Seq
+	case 3:
+		e.stage.SeqMoveFuncs = stage3.Seq
 	}
 }
 
@@ -151,6 +159,15 @@ func (e *engine) Score() int {
 
 func (e *engine) AddScore(value int) {
 	e.score += value
+	if e.score >= e.extendScore {
+		e.life++
+		for i, extendScore := range extendScores {
+			if e.extendScore == extendScore {
+				e.extendScore = extendScores[i+1]
+				break
+			}
+		}
+	}
 }
 
 func (e *engine) SaveResult() {
@@ -209,6 +226,7 @@ func (e *engine) Restart() {
 	e.gameState = gameStateMain
 	e.life = 2
 	e.score = 0
+	e.extendScore = 30000
 	e.stageCount = 1
 	e.displayScore = 0
 	e.boss = nil
@@ -253,7 +271,7 @@ func (e *engine) DoMainFrame(key int16, touchDX, touchDY int, ctx js.Value) {
 	e.stage.MoveFunc(e.stage, e)
 	e.displayScore = calcDisplayScore(e.score, e.displayScore)
 
-	ctx.Call("clearRect", 0, 0, 320, 480)
+	ctx.Call("clearRect", 0, 0, windowWidth, windowHeight)
 	drawObjects(ctx, e.images, e.enemies)
 	drawObjects(ctx, e.images, e.enemyShots)
 	drawObjects(ctx, e.images, e.effects)
@@ -288,13 +306,13 @@ func movePlayer(player *game.GameObject, key int16, touchDX, touchDY int, engine
 	player.Y += float64(touchDY)
 	if player.X < 0 {
 		player.X = 0
-	} else if player.X > 320 {
-		player.X = 320
+	} else if player.X > windowWidth {
+		player.X = windowWidth
 	}
 	if player.Y < 0 {
 		player.Y = 0
-	} else if player.Y > 480 {
-		player.Y = 480
+	} else if player.Y > windowHeight {
+		player.Y = windowHeight
 	}
 
 	if player.ShotFrame > 0 {

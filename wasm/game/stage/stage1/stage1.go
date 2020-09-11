@@ -1,10 +1,9 @@
 package stage1
 
 import (
-	"math/rand"
-
 	"github.com/fkmhrk/go-wasm-stg/game"
 	"github.com/fkmhrk/go-wasm-stg/game/draw"
+	"github.com/fkmhrk/go-wasm-stg/game/image"
 	"github.com/fkmhrk/go-wasm-stg/game/move"
 	"github.com/fkmhrk/go-wasm-stg/game/shot"
 )
@@ -15,22 +14,19 @@ var (
 		&game.SeqMove{Frame: 120, Func: nop},
 		&game.SeqMove{Frame: 1, Func: stageText},
 		&game.SeqMove{Frame: 120, Func: nop},
-		&game.SeqMove{Frame: 30, Func: stage1_1},
+		&game.SeqMove{Frame: 300, Func: step1},
 		&game.SeqMove{Frame: 120, Func: nop},
-		&game.SeqMove{Frame: 30, Func: stage1_2},
-		&game.SeqMove{Frame: 90, Func: nop},
-		&game.SeqMove{Frame: 30, Func: stage1_3},
+		&game.SeqMove{Frame: 300, Func: step2},
 		&game.SeqMove{Frame: 120, Func: nop},
-		&game.SeqMove{Frame: 30, Func: stage1_2},
-		&game.SeqMove{Frame: 30, Func: stage1_1},
-		&game.SeqMove{Frame: 90, Func: nop},
-		&game.SeqMove{Frame: 240, Func: stage1_4},
-		&game.SeqMove{Frame: 60, Func: nop},
-		&game.SeqMove{Frame: 30, Func: stage1_1},
-		&game.SeqMove{Frame: 60, Func: nop},
-		&game.SeqMove{Frame: 30, Func: stage1_2},
+		&game.SeqMove{Frame: 300, Func: step2},
 		&game.SeqMove{Frame: 120, Func: nop},
-		&game.SeqMove{Frame: 1, Func: stage1Boss},
+		&game.SeqMove{Frame: 300, Func: step1},
+		&game.SeqMove{Frame: 240, Func: nop},
+		&game.SeqMove{Frame: 240, Func: step3},
+		&game.SeqMove{Frame: 120, Func: nop},
+		&game.SeqMove{Frame: 240, Func: step3},
+		&game.SeqMove{Frame: 180, Func: nop},
+		&game.SeqMove{Frame: 1, Func: boss},
 		&game.SeqMove{Frame: 6000, Func: nop},
 	}
 )
@@ -53,49 +49,35 @@ func stageText(obj *game.GameObject, engine game.Engine, frame int) {
 	engine.AddEnemy(newEnemy)
 }
 
-func stage1_1(obj *game.GameObject, engine game.Engine, frame int) {
-	if frame%5 != 0 {
+func step1(obj *game.GameObject, engine game.Engine, frame int) {
+	if frame%60 != 0 {
 		return
 	}
-	x := frame / 5
-	newEnemy := makeEnemy1(engine, float64(16+28*x), 0, x%2 == 0)
-	engine.AddEnemy(newEnemy)
-
-}
-
-func stage1_2(obj *game.GameObject, engine game.Engine, frame int) {
-	if frame%5 != 0 {
-		return
-	}
-	x := frame / 5
-	newEnemy := makeEnemy1(engine, float64(304-28*x), 0, x%2 == 0)
+	hasItem := (frame/60)%2 == 0
+	newEnemy := makeEnemy1(engine, float64(288), 0, hasItem)
 	engine.AddEnemy(newEnemy)
 }
 
-func stage1_3(obj *game.GameObject, engine game.Engine, frame int) {
-	if frame%5 != 0 {
+func step2(obj *game.GameObject, engine game.Engine, frame int) {
+	if frame%60 != 0 {
 		return
 	}
-	x := frame / 5
-	newEnemy := makeEnemy1(engine, float64(304-28*x), 0, (x%2 == 0))
+	hasItem := (frame/60)%2 == 0
+	newEnemy := makeEnemy1(engine, float64(32), 0, hasItem)
 	engine.AddEnemy(newEnemy)
-
-	newEnemy = makeEnemy1(engine, float64(16+28*x), 0, (x%2 == 1))
-	engine.AddEnemy(newEnemy)
-
 }
 
-func stage1_4(obj *game.GameObject, engine game.Engine, frame int) {
-	if frame%15 != 0 {
+func step3(obj *game.GameObject, engine game.Engine, frame int) {
+	if frame%30 != 0 {
 		return
 	}
-	x := rand.Float64() * 320
-	newEnemy := makeEnemy1(engine, x, 0, true)
+	x := (frame/30)*32 + 32
+	hasItem := (frame/30)%2 == 0
+	newEnemy := makeEnemy1(engine, float64(x), 0, hasItem)
 	engine.AddEnemy(newEnemy)
-
 }
 
-func stage1Boss(obj *game.GameObject, engine game.Engine, frame int) {
+func boss(obj *game.GameObject, engine game.Engine, frame int) {
 	newEnemy := game.NewObject(game.ObjTypeEnemy, 160, 0)
 	newEnemy.HP = 100
 	newEnemy.MoveFunc = engine.Move().Sequential()
@@ -121,7 +103,7 @@ func stage1Boss(obj *game.GameObject, engine game.Engine, frame int) {
 	newEnemy.Score = 10000
 	newEnemy.Size = 24
 	newEnemy.DrawFunc = engine.Draw().Static()
-	newEnemy.ImageName = "enemy11"
+	newEnemy.ImageName = image.BossStage1
 	newEnemy.ShotFunc = engine.Shot().Sequential()
 	newEnemy.ShotFrame = 0
 	newEnemy.SeqShotFuncs = shotBoss
@@ -139,17 +121,17 @@ func deadBoss(engine game.Engine, obj *game.GameObject) {
 func makeEnemy1(engine game.Engine, x, y float64, hasItem bool) *game.GameObject {
 	enemy := game.NewObject(game.ObjTypeEnemy, x, y)
 	enemy.MoveFunc = move.StopAim
-	enemy.Vy = 3
+	enemy.Vy = 2
 	if hasItem {
 		enemy.DeadFunc = engine.Dead().SoloExplodeWithItem(1)
 	} else {
 		enemy.DeadFunc = engine.Dead().SoloExplode()
 	}
-	enemy.Score = 300
+	enemy.Score = 200
 	enemy.Size = 8
 	enemy.DrawFunc = engine.Draw().Static()
-	enemy.ImageName = "enemy1"
-	enemy.ShotFunc = engine.Shot().Sequential()
+	enemy.ImageName = image.EnemyApple
+	enemy.ShotFunc = nil
 	enemy.ShotFrame = 0
 	enemy.SeqShotFuncs = shot.SeqWaitAim
 	return enemy
@@ -158,6 +140,6 @@ func makeEnemy1(engine game.Engine, x, y float64, hasItem bool) *game.GameObject
 var (
 	shotBoss game.SeqShotFuncs = game.SeqShotFuncs{
 		&game.SeqShot{Frame: 60, Func: shot.Nop},
-		&game.SeqShot{Frame: 9999, Func: shot.Aim5},
+		&game.SeqShot{Frame: 9999, Func: shot.Fan3},
 	}
 )
