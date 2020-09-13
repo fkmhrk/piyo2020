@@ -96,6 +96,11 @@ if (!WebAssembly.instantiateStreaming) {
 
 // boot
 (async () => {
+  const titleImg = await loadImage("./title.png");
+  const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
+  const context = canvas.getContext("2d")!;
+  context.drawImage(titleImg, 0, 0, 640, 960, 0, 0, 320, 480);
+
   const [
     playerImg,
     heartImg,
