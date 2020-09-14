@@ -150,6 +150,13 @@ const initEventListeners = () => {
   if (isAnalyticsEnabled()) {
     startAnalytics();
   }
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js");
+    });
+  }
+
   const titleImg = await loadImage("./title.png");
   const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
   const context = canvas.getContext("2d")!;

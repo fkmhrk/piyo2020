@@ -1,0 +1,12 @@
+{
+  "name": "Piyo2020",
+  "short_name": "Piyo2020",
+  "icons": [
+    {
+      "src": "./app-icon192x192.png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone"
+}
