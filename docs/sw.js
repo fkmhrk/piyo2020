@@ -13,3 +13,5 @@ registerRoute(new RegExp(".+\\.wasm$"), new NetworkFirst());
 registerRoute(new RegExp(".+\\.js$"), new NetworkFirst());
 registerRoute(new RegExp(".+\\.html$"), new NetworkFirst());
 registerRoute(new RegExp(".+\\.png$"), new CacheFirst());
+registerRoute("/", new NetworkFirst());
+registerRoute("/go-wasm-stg/", new NetworkFirst());

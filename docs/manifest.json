@@ -5,8 +5,14 @@
     {
       "src": "./app-icon192x192.png",
       "sizes": "192x192"
+    },
+    {
+      "src": "./app-icon512x512.png",
+      "sizes": "512x512"
     }
   ],
   "start_url": ".",
-  "display": "standalone"
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#000000"
 }
