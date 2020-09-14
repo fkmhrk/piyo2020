@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Piyo 2020</title>
     <link rel="icon" href="./favicon.ico" />
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-177923604-1"
+    ></script>
+    <script>
+      // Google Analytics
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+    </script>
     <style>
       .result_table tbody td {
         text-align: right;
@@ -53,6 +64,27 @@
             </div>
             <div style="text-align: center; margin-top: 8px">
               <button id="restart">Restart</button>
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="analytics_block"
+          style="
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: none;
+            justify-content: center;
+            align-items: center;
+          "
+        >
+          <div style="background-color: white; padding: 8px">
+            <p>This site uses Cookie for Google Analytics.</p>
+            <div style="text-align: center; margin-top: 8px">
+              <button id="accept">Accept &amp; start</button>
             </div>
           </div>
         </div>

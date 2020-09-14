@@ -14,10 +14,25 @@ declare function setImage(
 declare function start(): void;
 declare function restart(): void;
 
+declare function gtag(...args: any): void;
+
 interface IResultScore {
   score: number;
   date: number;
 }
+
+const isAnalyticsEnabled = () => {
+  return localStorage.getItem("ga") === "true";
+};
+
+const enableAnalytics = () => {
+  localStorage.setItem("ga", "true");
+};
+
+const startAnalytics = () => {
+  gtag("js", new Date());
+  gtag("config", "UA-177923604-1");
+};
 
 const loadImage = (src: string) =>
   new Promise((resolve: (img: HTMLImageElement) => void, reject) => {
@@ -63,6 +78,10 @@ const showTopScores = (scores: IResultScore[]) => {
   }
 };
 
+(<any>window).event = (action: string) => {
+  gtag("event", action);
+};
+
 (<any>window).showResult = (
   stage: number,
   score: number,
@@ -94,8 +113,43 @@ if (!WebAssembly.instantiateStreaming) {
   };
 }
 
+const initEventListeners = () => {
+  const button = document.querySelector("#start") as HTMLButtonElement;
+  button.addEventListener("click", () => {
+    button.hidden = true;
+    if (isAnalyticsEnabled()) {
+      start();
+    } else {
+      // show analytics
+      const block = document.querySelector(
+        "#analytics_block"
+      ) as HTMLDivElement;
+      block.style.display = "flex";
+    }
+  });
+
+  const restartButton = document.querySelector("#restart") as HTMLButtonElement;
+  restartButton.addEventListener("click", () => {
+    const block = document.querySelector("#gameover-block") as HTMLDivElement;
+    block.style.display = "none";
+    restart();
+  });
+
+  const acceptButton = document.querySelector("#accept") as HTMLButtonElement;
+  acceptButton.addEventListener("click", () => {
+    const block = document.querySelector("#analytics_block") as HTMLDivElement;
+    block.style.display = "none";
+    enableAnalytics();
+    startAnalytics();
+    start();
+  });
+};
+
 // boot
 (async () => {
+  if (isAnalyticsEnabled()) {
+    startAnalytics();
+  }
   const titleImg = await loadImage("./title.png");
   const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
   const context = canvas.getContext("2d")!;
@@ -146,19 +200,7 @@ if (!WebAssembly.instantiateStreaming) {
     setImage("enemy13", e13Img, 40, 40);
     setImage("item1", item1Img, 12, 12);
 
-    const button = document.querySelector("#start") as HTMLButtonElement;
-    button.addEventListener("click", () => {
-      button.hidden = true;
-      start();
-    });
-    const restartButton = document.querySelector(
-      "#restart"
-    ) as HTMLButtonElement;
-    restartButton.addEventListener("click", () => {
-      const block = document.querySelector("#gameover-block") as HTMLDivElement;
-      block.style.display = "none";
-      restart();
-    });
+    initEventListeners();
   } catch (err) {
     console.error(err);
   }
