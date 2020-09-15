@@ -171,6 +171,7 @@ const initEventListeners = () => {
     e11Img,
     e12Img,
     e13Img,
+    e14Img,
     item1Img,
   ] = await Promise.all([
     loadImage("./player.png"),
@@ -181,6 +182,7 @@ const initEventListeners = () => {
     loadImage("./enemy11.png"),
     loadImage("./enemy12.png"),
     loadImage("./enemy13.png"),
+    loadImage("./enemy14.png"),
     loadImage("./item1.png"),
   ]);
 
@@ -205,6 +207,7 @@ const initEventListeners = () => {
     setImage("enemy11", e11Img, 40, 40);
     setImage("enemy12", e12Img, 40, 40);
     setImage("enemy13", e13Img, 40, 40);
+    setImage("enemy14", e14Img, 40, 40);
     setImage("item1", item1Img, 12, 12);
 
     initEventListeners();

@@ -1,7 +1,6 @@
 package stage4
 
 import (
-	"math"
 	"math/rand"
 
 	"github.com/fkmhrk/go-wasm-stg/game"
@@ -12,9 +11,12 @@ import (
 )
 
 var (
+	// Seq is stage 4 pattern
 	Seq game.SeqMoveFuncs = game.SeqMoveFuncs{
 		&game.SeqMove{Frame: 120, Func: nop},
 		&game.SeqMove{Frame: 1, Func: stageText},
+		&game.SeqMove{Frame: 120, Func: nop},
+		&game.SeqMove{Frame: 1200, Func: step1},
 		&game.SeqMove{Frame: 120, Func: nop},
 		&game.SeqMove{Frame: 1, Func: boss},
 		&game.SeqMove{Frame: 9999, Func: nop},
@@ -33,15 +35,30 @@ func stageText(obj *game.GameObject, engine game.Engine, frame int) {
 	newEnemy.DeadFunc = engine.Dead().SoloExplode()
 	newEnemy.Score = 0
 	newEnemy.Size = 16
-	newEnemy.DrawFunc = draw.StageText(3)
+	newEnemy.DrawFunc = draw.StageText(4)
 	newEnemy.ShotFunc = nil
 	newEnemy.ShotFrame = 0
 	engine.AddEnemy(newEnemy)
 }
 
+func step1(obj *game.GameObject, engine game.Engine, frame int) {
+	if frame%30 != 0 {
+		return
+	}
+	y := rand.Float64() * 64
+	newEnemy := makeEnemy1(engine, 16, y+64)
+	newEnemy.Vx = 1
+	engine.AddEnemy(newEnemy)
+
+	y = rand.Float64() * 64
+	newEnemy = makeEnemy1(engine, 304, y+64)
+	newEnemy.Vx = -1
+	engine.AddEnemy(newEnemy)
+}
+
 func boss(obj *game.GameObject, engine game.Engine, frame int) {
 	newEnemy := game.NewObject(game.ObjTypeEnemy, 160, 0)
-	newEnemy.HP = 100
+	newEnemy.HP = 150
 	newEnemy.MoveFunc = engine.Move().Sequential()
 	newEnemy.Vx = 0
 	newEnemy.Vy = 1
@@ -60,7 +77,7 @@ func boss(obj *game.GameObject, engine game.Engine, frame int) {
 func deadBoss(engine game.Engine, obj *game.GameObject) {
 	engine.Dead().Explode()
 	engine.ShowBoss(nil)    // clear
-	engine.GoToNextStage(1) // todo make stage 3
+	engine.GoToNextStage(5) // ending
 }
 
 var (
@@ -95,23 +112,30 @@ func randomAim(obj *game.GameObject, engine game.Engine, frame int) {
 
 func bossShot(obj *game.GameObject, engine game.Engine, frame int) {
 	shot.Fan5(obj, engine, frame)
-	if frame%150 != 50 {
+	if frame%60 != 0 {
 		return
 	}
-	p := engine.Player()
-	rad := math.Atan2(p.Y-obj.Y, p.X-obj.X)
-	delta := math.Pi * 2 / 64
-	radList := make([]float64, 17, 17)
-	for i := -8; i <= 8; i++ {
-		radList[i+8] = rad + delta*float64(i)
-	}
-	speed := float64(1)
-	for i := 0; i < 17; i++ {
-		shot := game.NewObject(game.ObjTypeEnemyShot, obj.X, obj.Y)
-		shot.Vx = math.Cos(radList[i]) * speed
-		shot.Vy = math.Sin(radList[i]) * speed
-		shot.MoveFunc = engine.Move().Line()
-		shot.DrawFunc = draw.New().StrokeArc()
-		engine.AddEnemyShot(shot)
-	}
+	shot := game.NewObject(game.ObjTypeEnemyShot, obj.X, obj.Y)
+	shot.Vx = 0
+	shot.Vy = 1
+	shot.MoveFunc = engine.Move().Line()
+	shot.DrawFunc = engine.Draw().StrokeArc()
+	engine.AddEnemyShot(shot)
+}
+
+// private functions
+
+func makeEnemy1(engine game.Engine, x, y float64) *game.GameObject {
+	enemy := game.NewObject(game.ObjTypeEnemy, x, y)
+	enemy.MoveFunc = engine.Move().ItemDrop()
+	enemy.Vy = -2
+	enemy.DeadFunc = engine.Dead().SoloExplodeWithItem(1)
+	enemy.Score = 800
+	enemy.Size = 8
+	enemy.DrawFunc = engine.Draw().Static()
+	enemy.ImageName = image.EnemyApple
+	enemy.ShotFunc = engine.Shot().Sequential()
+	enemy.ShotFrame = 0
+	enemy.SeqShotFuncs = shot.SeqCircle16
+	return enemy
 }

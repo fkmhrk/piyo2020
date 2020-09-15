@@ -24,6 +24,7 @@ type Engine interface {
 	ToGameOver()
 	ShowBoss(boss *GameObject)
 	GoToNextStage(stage int)
+	AllClearBonus()
 
 	// Called from UI
 	Restart()

@@ -14,6 +14,8 @@ import (
 	"github.com/fkmhrk/go-wasm-stg/game/stage/stage1"
 	"github.com/fkmhrk/go-wasm-stg/game/stage/stage2"
 	"github.com/fkmhrk/go-wasm-stg/game/stage/stage3"
+	"github.com/fkmhrk/go-wasm-stg/game/stage/stage4"
+	"github.com/fkmhrk/go-wasm-stg/game/stage/stage5"
 	"github.com/fkmhrk/go-wasm-stg/game/storage"
 )
 
@@ -146,7 +148,16 @@ func (e *engine) GoToNextStage(stage int) {
 		e.stage.SeqMoveFuncs = stage2.Seq
 	case 3:
 		e.stage.SeqMoveFuncs = stage3.Seq
+	case 4:
+		e.stage.SeqMoveFuncs = stage4.Seq
+	case 5:
+		e.stage.SeqMoveFuncs = stage5.Seq
 	}
+}
+
+func (e *engine) AllClearBonus() {
+	e.AddScore(e.life * 100000)
+	e.life = 0
 }
 
 func (e *engine) Player() *game.GameObject {
@@ -194,6 +205,10 @@ func (e *engine) Miss() bool {
 	e.result.DeathCount++
 	e.SaveResult()
 	e.updateResult()
+	// clear all shot
+	for _, s := range e.enemyShots {
+		s.Alive = false
+	}
 	return e.life >= 0
 }
 
@@ -431,10 +446,13 @@ func calcDisplayScore(score, displayScore int) int {
 	if score == displayScore {
 		return score
 	}
-	if score-displayScore > 1000 {
+	if score-displayScore >= 10000 {
+		displayScore += 1000
+	}
+	if score-displayScore >= 1000 {
 		displayScore += 100
 	}
-	if score-displayScore > 100 {
+	if score-displayScore >= 100 {
 		displayScore += 10
 	}
 	if score-displayScore >= 1 {

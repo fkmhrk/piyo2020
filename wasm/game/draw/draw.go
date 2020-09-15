@@ -69,6 +69,13 @@ func StageText(stage int) func(ctx js.Value, obj *game.GameObject, images map[st
 	}
 }
 
+func SingleText(text string) func(ctx js.Value, obj *game.GameObject, images map[string]*game.JsImage) {
+	return func(ctx js.Value, obj *game.GameObject, images map[string]*game.JsImage) {
+		ctx.Set("font", "32px sans-serif")
+		ctx.Call("fillText", text, obj.X, obj.Y)
+	}
+}
+
 func Player(ctx js.Value, obj *game.GameObject, images map[string]*game.JsImage) {
 	if obj.Alive {
 		if obj.Frame%3 == 1 {

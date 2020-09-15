@@ -84,7 +84,7 @@ func lineReflect(obj *game.GameObject, engine game.Engine) {
 		obj.X += obj.Vx
 	}
 	if obj.Y < 0 {
-		obj.Vy = obj.Vy
+		obj.Vy = -obj.Vy
 		obj.Y += obj.Vy
 	}
 	if isOutOfScreen(obj) {

@@ -84,10 +84,10 @@ func Fan3(obj *game.GameObject, engine game.Engine, frame int) {
 }
 
 func Fan5(obj *game.GameObject, engine game.Engine, frame int) {
-	if frame%15 != 0 {
+	if frame%30 != 0 {
 		return
 	}
-	loop := frame/15 - 1
+	loop := frame/30 - 1
 	p := engine.Player()
 	rad := math.Atan2(p.Y-obj.Y, p.X-obj.X) + math.Pi*2*float64(loop)/12
 	speed := float64(2)
@@ -99,6 +99,21 @@ func Fan5(obj *game.GameObject, engine game.Engine, frame int) {
 		shot.DrawFunc = engine.Draw().StrokeArc()
 		engine.AddEnemyShot(shot)
 		rad += math.Pi * 2 / 5
+	}
+}
+
+func Circle16(obj *game.GameObject, engine game.Engine, frame int) {
+	p := engine.Player()
+	rad := math.Atan2(p.Y-obj.Y, p.X-obj.X)
+	speed := float64(3)
+	for i := 0; i < 16; i++ {
+		shot := game.NewObject(game.ObjTypeEnemyShot, obj.X, obj.Y)
+		shot.Vx = math.Cos(rad) * speed
+		shot.Vy = math.Sin(rad) * speed
+		shot.MoveFunc = engine.Move().Line()
+		shot.DrawFunc = engine.Draw().StrokeArc()
+		engine.AddEnemyShot(shot)
+		rad += math.Pi * 2 / 16
 	}
 }
 
@@ -152,5 +167,10 @@ var (
 	Seq3Way game.SeqShotFuncs = game.SeqShotFuncs{
 		&game.SeqShot{Frame: 30, Func: Nop},
 		&game.SeqShot{Frame: 9999, Func: Way3},
+	}
+	SeqCircle16 game.SeqShotFuncs = game.SeqShotFuncs{
+		&game.SeqShot{Frame: 60, Func: Nop},
+		&game.SeqShot{Frame: 1, Func: Circle16},
+		&game.SeqShot{Frame: 9999, Func: Nop},
 	}
 )

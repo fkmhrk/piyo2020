@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	// Seq is stage 2 pattern
+	// Seq is stage 3 pattern
 	Seq game.SeqMoveFuncs = game.SeqMoveFuncs{
 		&game.SeqMove{Frame: 180, Func: nop},
 		&game.SeqMove{Frame: 1, Func: stageText},
@@ -152,8 +152,8 @@ func boss(obj *game.GameObject, engine game.Engine, frame int) {
 
 func deadBoss(engine game.Engine, obj *game.GameObject) {
 	engine.Dead().Explode()
-	engine.ShowBoss(nil)    // clear
-	engine.GoToNextStage(1) // todo make stage 3
+	engine.ShowBoss(nil) // clear
+	engine.GoToNextStage(4)
 }
 
 var (
