@@ -91,7 +91,7 @@ const showTopScores = (scores: IResultScore[]) => {
   showTopScores(result.scores);
   const button = document.querySelector("#tweet-button") as HTMLButtonElement;
   button.onclick = () => {
-    window.location.href = `https://twitter.com/intent/tweet?text=I reached Stage ${stage} and got ${score} Points!&url=https:%2f%2ffkmhrk.github.io%2fgo-wasm-stg%2f&hashtags=piyo2020`;
+    window.location.href = `https://twitter.com/intent/tweet?text=I reached Stage ${stage} and got ${score} Points!&url=https:%2f%2ffkmhrk.github.io%2fpiyo2020%2f&hashtags=piyo2020`;
   };
 };
 
